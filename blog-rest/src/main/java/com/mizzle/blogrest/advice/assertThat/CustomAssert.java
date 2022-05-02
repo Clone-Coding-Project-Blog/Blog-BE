@@ -12,6 +12,13 @@ import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 
 public class CustomAssert extends Assert{
+
+    public static void isTrue(boolean value){
+        if(value){
+            throw new DefaultException(ErrorCode.INVALID_CHECK);
+        }
+    }
+
     public static void isValidParameter(Errors errors){
         if(errors.hasErrors()){
             throw new InvalidParameterException(errors);
@@ -40,7 +47,6 @@ public class CustomAssert extends Assert{
         throw new CustomAuthenticationException(message);
     }
 
-    
     public static void isAuthentication(boolean value){
         if(value){
             throw new CustomAuthenticationException(ErrorCode.INVALID_AUTHENTICATION);

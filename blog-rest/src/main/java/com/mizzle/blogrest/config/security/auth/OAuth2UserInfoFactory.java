@@ -8,7 +8,7 @@ import com.mizzle.blogrest.config.security.auth.company.Github;
 import com.mizzle.blogrest.config.security.auth.company.Google;
 import com.mizzle.blogrest.config.security.auth.company.Kakao;
 import com.mizzle.blogrest.config.security.auth.company.Naver;
-import com.mizzle.blogrest.entity.user.Provider;
+import com.mizzle.blogrest.domain.entity.user.Provider;
 
 public class OAuth2UserInfoFactory {
     public static OAuth2UserInfo getOAuth2UserInfo(String registrationId, Map<String, Object> attributes) {

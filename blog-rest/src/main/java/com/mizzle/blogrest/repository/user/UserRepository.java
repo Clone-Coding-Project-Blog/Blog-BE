@@ -2,7 +2,7 @@ package com.mizzle.blogrest.repository.user;
 
 import java.util.Optional;
 
-import com.mizzle.blogrest.entity.user.User;
+import com.mizzle.blogrest.domain.entity.user.User;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

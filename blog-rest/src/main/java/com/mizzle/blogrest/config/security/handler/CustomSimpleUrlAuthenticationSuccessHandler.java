@@ -5,7 +5,6 @@ import com.mizzle.blogrest.config.security.OAuth2Config;
 import com.mizzle.blogrest.config.security.repository.CustomAuthorizationRequestRepository;
 import com.mizzle.blogrest.config.security.service.CustomTokenProviderService;
 import com.mizzle.blogrest.config.security.util.CustomCookie;
-import com.mizzle.blogrest.error.BadRequestException;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -48,9 +47,7 @@ public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthen
         Optional<String> redirectUri = CustomCookie.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
                 .map(Cookie::getValue);
 
-        if(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get())) {
-            throw new BadRequestException("Sorry! We've got an Unauthorized Redirect URI and can't proceed with the authentication");
-        }
+        CustomAssert.isAuthentication(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get()));
 
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 

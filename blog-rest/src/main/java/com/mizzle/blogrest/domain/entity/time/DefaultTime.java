@@ -1,4 +1,4 @@
-package com.mizzle.blogrest.entity.time;
+package com.mizzle.blogrest.domain.entity.time;
 
 import java.time.LocalDateTime;
 

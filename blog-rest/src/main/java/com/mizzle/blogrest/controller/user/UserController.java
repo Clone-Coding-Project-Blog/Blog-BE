@@ -1,10 +1,12 @@
 package com.mizzle.blogrest.controller.user;
 
+import java.util.Optional;
+
+import com.mizzle.blogrest.advice.assertThat.CustomAssert;
 import com.mizzle.blogrest.advice.payload.ErrorResponse;
 import com.mizzle.blogrest.config.security.token.CurrentUser;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
-import com.mizzle.blogrest.entity.user.User;
-import com.mizzle.blogrest.error.BadRequestException;
+import com.mizzle.blogrest.domain.entity.user.User;
 import com.mizzle.blogrest.repository.user.UserRepository;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +31,9 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "저장 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @GetMapping("/user/me")
-    public User getCurrentUser(@CurrentUser UserPrincipal userPrincipal) {
-        return userRepository.findById(userPrincipal.getId())
-                .orElseThrow(() -> new BadRequestException(""+userPrincipal.getId()));
+    public User readUser(@CurrentUser UserPrincipal userPrincipal) {
+        Optional<User> user = userRepository.findById(userPrincipal.getId());
+        CustomAssert.isOptionalPresent(user);
+        return user.get();
     }
 }

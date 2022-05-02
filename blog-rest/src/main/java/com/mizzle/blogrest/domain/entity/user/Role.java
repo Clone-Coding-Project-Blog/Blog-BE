@@ -1,4 +1,4 @@
-package com.mizzle.blogrest.entity.user;
+package com.mizzle.blogrest.domain.entity.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

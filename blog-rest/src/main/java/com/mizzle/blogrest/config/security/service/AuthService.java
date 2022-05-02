@@ -2,10 +2,10 @@ package com.mizzle.blogrest.config.security.service;
 
 import java.net.URI;
 
-import com.mizzle.blogrest.entity.user.Provider;
-import com.mizzle.blogrest.entity.user.Role;
-import com.mizzle.blogrest.entity.user.User;
-import com.mizzle.blogrest.error.BadRequestException;
+import com.mizzle.blogrest.advice.assertThat.CustomAssert;
+import com.mizzle.blogrest.domain.entity.user.Provider;
+import com.mizzle.blogrest.domain.entity.user.Role;
+import com.mizzle.blogrest.domain.entity.user.User;
 import com.mizzle.blogrest.payload.request.LoginRequest;
 import com.mizzle.blogrest.payload.request.SignUpRequest;
 import com.mizzle.blogrest.payload.response.ApiResponse;
@@ -43,14 +43,12 @@ public class AuthService {
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         String token = customTokenProviderService.createToken(authentication);
-        return ResponseEntity.ok(new AuthResponse(token));
+        return ResponseEntity.ok(new ApiResponse(true, new AuthResponse(token)) );
     }
 
     public ResponseEntity<?> create(SignUpRequest signUpRequest){
-        if(userRepository.existsByEmail(signUpRequest.getEmail())) {
-            throw new BadRequestException("Email address already in use.");
-        }
-
+        CustomAssert.isTrue(userRepository.existsByEmail(signUpRequest.getEmail()));
+        
         User user = new User();
         user.setName(signUpRequest.getName());
         user.setEmail(signUpRequest.getEmail());

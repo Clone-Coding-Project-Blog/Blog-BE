@@ -1,4 +1,4 @@
-package com.mizzle.blogrest.entity.user;
+package com.mizzle.blogrest.domain.entity.user;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -11,7 +11,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.mizzle.blogrest.entity.time.DefaultTime;
+import com.mizzle.blogrest.domain.entity.time.DefaultTime;
 
 import lombok.Getter;
 import lombok.Setter;

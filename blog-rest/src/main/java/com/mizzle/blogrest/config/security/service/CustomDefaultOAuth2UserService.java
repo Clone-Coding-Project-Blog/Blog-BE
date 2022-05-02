@@ -6,9 +6,9 @@ import com.mizzle.blogrest.advice.assertThat.CustomAssert;
 import com.mizzle.blogrest.config.security.auth.OAuth2UserInfo;
 import com.mizzle.blogrest.config.security.auth.OAuth2UserInfoFactory;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
-import com.mizzle.blogrest.entity.user.Provider;
-import com.mizzle.blogrest.entity.user.Role;
-import com.mizzle.blogrest.entity.user.User;
+import com.mizzle.blogrest.domain.entity.user.Provider;
+import com.mizzle.blogrest.domain.entity.user.Role;
+import com.mizzle.blogrest.domain.entity.user.User;
 import com.mizzle.blogrest.repository.user.UserRepository;
 
 import org.springframework.security.authentication.InternalAuthenticationServiceException;

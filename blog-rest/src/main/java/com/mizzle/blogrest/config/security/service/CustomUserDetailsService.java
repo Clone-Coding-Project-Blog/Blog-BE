@@ -1,10 +1,12 @@
 package com.mizzle.blogrest.config.security.service;
 
+import java.util.Optional;
+
 import javax.transaction.Transactional;
 
+import com.mizzle.blogrest.advice.assertThat.CustomAssert;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
-import com.mizzle.blogrest.entity.user.User;
-import com.mizzle.blogrest.error.BadRequestException;
+import com.mizzle.blogrest.domain.entity.user.User;
 import com.mizzle.blogrest.repository.user.UserRepository;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -33,11 +35,10 @@ public class CustomUserDetailsService implements UserDetailsService{
 
     @Transactional
     public UserDetails loadUserById(Long id) {
-        User user = userRepository.findById(id).orElseThrow(
-            () -> new BadRequestException(""+id)
-        );
+        Optional<User> user = userRepository.findById(id);
+        CustomAssert.isOptionalPresent(user);
 
-        return UserPrincipal.create(user);
+        return UserPrincipal.create(user.get());
     }
     
 }
