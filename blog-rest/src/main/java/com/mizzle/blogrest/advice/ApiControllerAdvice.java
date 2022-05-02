@@ -110,7 +110,6 @@ public class ApiControllerAdvice {
 
     @ExceptionHandler(CustomAuthenticationException.class)
     protected ResponseEntity<?> handleCustomAuthenticationException(CustomAuthenticationException e) {
-        
         ErrorResponse response = ErrorResponse
                 .builder()
                 .status(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED.value())

@@ -1,5 +1,6 @@
 package com.mizzle.blogrest.config.security.handler;
 
+import com.mizzle.blogrest.advice.assertThat.CustomAssert;
 import com.mizzle.blogrest.config.security.OAuth2Config;
 import com.mizzle.blogrest.config.security.repository.CustomAuthorizationRequestRepository;
 import com.mizzle.blogrest.config.security.service.CustomTokenProviderService;
@@ -12,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import static com.mizzle.blogrest.config.security.repository.CustomAuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 
-@Slf4j
 @RequiredArgsConstructor
 @Component
 public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
@@ -37,12 +36,9 @@ public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthen
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        CustomAssert.isAuthentication(response.isCommitted());
+        
         String targetUrl = determineTargetUrl(request, response, authentication);
-
-        if (response.isCommitted()) {
-            logger.debug("Response has already been committed. Unable to redirect to " + targetUrl);
-            return;
-        }
 
         clearAuthenticationAttributes(request, response);
         getRedirectStrategy().sendRedirect(request, response, targetUrl);

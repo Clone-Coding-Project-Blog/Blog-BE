@@ -6,13 +6,10 @@ import com.mizzle.blogrest.config.security.auth.OAuth2UserInfo;
 
 import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public class Naver extends OAuth2UserInfo{
 
     public Naver(Map<String, Object> attributes) {
         super(attributes);
-        log.info("NaverOAuth2UserInfo={}",attributes);
-    
     }
 
     @Override

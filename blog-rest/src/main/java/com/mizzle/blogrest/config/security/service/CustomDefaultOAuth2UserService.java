@@ -2,9 +2,9 @@ package com.mizzle.blogrest.config.security.service;
 
 import java.util.Optional;
 
+import com.mizzle.blogrest.advice.assertThat.CustomAssert;
 import com.mizzle.blogrest.config.security.auth.OAuth2UserInfo;
 import com.mizzle.blogrest.config.security.auth.OAuth2UserInfoFactory;
-import com.mizzle.blogrest.config.security.error.CustomAuthenticationException;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
 import com.mizzle.blogrest.entity.user.Provider;
 import com.mizzle.blogrest.entity.user.Role;
@@ -20,9 +20,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @RequiredArgsConstructor
 @Service
 public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
@@ -43,20 +41,14 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
 
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
-        
-        if(oAuth2UserInfo.getEmail().isEmpty()) {
-            throw new CustomAuthenticationException("Email not found from OAuth2 provider");
-        }
+        CustomAssert.isAuthentication(oAuth2UserInfo.getEmail().isEmpty());
 
         Optional<User> userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());
         User user;
         if(userOptional.isPresent()) {
             user = userOptional.get();
-            if(!user.getProvider().equals(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))) {
-                throw new CustomAuthenticationException("Looks like you're signed up with " +
-                        user.getProvider() + " account. Please use your " + user.getProvider() +
-                        " account to login.");
-            }
+            CustomAssert.isAuthentication(!user.getProvider().equals(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId())));
+
             user = updateExistingUser(user, oAuth2UserInfo);
         } else {
             user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);

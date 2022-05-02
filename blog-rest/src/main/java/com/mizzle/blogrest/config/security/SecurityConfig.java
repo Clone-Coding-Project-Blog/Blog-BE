@@ -8,7 +8,6 @@ import com.mizzle.blogrest.config.security.service.CustomUserDetailsService;
 import com.mizzle.blogrest.config.security.token.CustomAuthenticationEntryPoint;
 import com.mizzle.blogrest.config.security.token.CustomOncePerRequestFilter;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;

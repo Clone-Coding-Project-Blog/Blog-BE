@@ -4,15 +4,10 @@ import java.util.Map;
 
 import com.mizzle.blogrest.config.security.auth.OAuth2UserInfo;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class Kakao extends OAuth2UserInfo{
     
     public Kakao(Map<String, Object> attributes) {
         super(attributes);
-        log.info("KakaoOAuth2UserInfo()={}",attributes);
-        
     }
 
     @Override

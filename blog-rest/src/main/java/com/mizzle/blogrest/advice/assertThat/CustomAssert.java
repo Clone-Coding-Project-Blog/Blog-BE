@@ -6,13 +6,11 @@ import java.util.Optional;
 import com.mizzle.blogrest.advice.error.DefaultException;
 import com.mizzle.blogrest.advice.error.InvalidParameterException;
 import com.mizzle.blogrest.advice.payload.ErrorCode;
+import com.mizzle.blogrest.config.security.error.CustomAuthenticationException;
 
 import org.springframework.util.Assert;
 import org.springframework.validation.Errors;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class CustomAssert extends Assert{
     public static void isValidParameter(Errors errors){
         if(errors.hasErrors()){
@@ -38,4 +36,14 @@ public class CustomAssert extends Assert{
         }
     }
 
+    public static void isAuthentication(String message){
+        throw new CustomAuthenticationException(message);
+    }
+
+    
+    public static void isAuthentication(boolean value){
+        if(value){
+            throw new CustomAuthenticationException(ErrorCode.INVALID_AUTHENTICATION);
+        }
+    }
 }

@@ -21,4 +21,9 @@ public class CustomAuthenticationException extends AuthenticationException{
         super(msg);
     }
 
+    public CustomAuthenticationException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
+    }
+
 }

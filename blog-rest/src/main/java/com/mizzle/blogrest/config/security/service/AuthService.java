@@ -1,9 +1,6 @@
 package com.mizzle.blogrest.config.security.service;
 
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 
 import com.mizzle.blogrest.entity.user.Provider;
 import com.mizzle.blogrest.entity.user.Role;

@@ -9,9 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint{
 
     @Override

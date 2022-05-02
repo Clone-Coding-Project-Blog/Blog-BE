@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import com.mizzle.blogrest.entity.user.Role;
 import com.mizzle.blogrest.entity.user.User;
 
 import org.springframework.security.core.GrantedAuthority;

@@ -7,7 +7,6 @@ import com.mizzle.blogrest.entity.user.User;
 import com.mizzle.blogrest.error.BadRequestException;
 import com.mizzle.blogrest.repository.user.UserRepository;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;

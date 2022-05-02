@@ -9,9 +9,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.util.SerializationUtils;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class CustomCookie {
     
     public static Optional<Cookie> getCookie(HttpServletRequest request, String name){
