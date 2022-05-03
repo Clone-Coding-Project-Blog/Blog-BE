@@ -62,7 +62,6 @@ public class Board extends DefaultTime{
     @JoinColumn(name = "user")
     private User user;
 
-    //@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @OneToMany(cascade = CascadeType.REMOVE, fetch=FetchType.EAGER)
     @JoinColumn(name = "board_id")
     private Set<Tag> tag = new HashSet<>();
