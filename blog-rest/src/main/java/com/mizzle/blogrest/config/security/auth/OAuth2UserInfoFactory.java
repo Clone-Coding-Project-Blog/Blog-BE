@@ -2,7 +2,7 @@ package com.mizzle.blogrest.config.security.auth;
 
 import java.util.Map;
 
-import com.mizzle.blogrest.advice.assertThat.CustomAssert;
+import com.mizzle.blogrest.advice.assertThat.DefaultAssert;
 import com.mizzle.blogrest.config.security.auth.company.Facebook;
 import com.mizzle.blogrest.config.security.auth.company.Github;
 import com.mizzle.blogrest.config.security.auth.company.Google;
@@ -23,7 +23,7 @@ public class OAuth2UserInfoFactory {
         } else if (registrationId.equalsIgnoreCase(Provider.kakao.toString())) {
             return new Kakao(attributes);
         } else {
-            CustomAssert.isAuthentication("해당 oauth2 기능은 지원하지 않습니다.");
+            DefaultAssert.isAuthentication("해당 oauth2 기능은 지원하지 않습니다.");
         }
         return null;
     }

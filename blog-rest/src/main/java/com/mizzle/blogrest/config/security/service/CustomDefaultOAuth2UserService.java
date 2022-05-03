@@ -2,7 +2,7 @@ package com.mizzle.blogrest.config.security.service;
 
 import java.util.Optional;
 
-import com.mizzle.blogrest.advice.assertThat.CustomAssert;
+import com.mizzle.blogrest.advice.assertThat.DefaultAssert;
 import com.mizzle.blogrest.config.security.auth.OAuth2UserInfo;
 import com.mizzle.blogrest.config.security.auth.OAuth2UserInfoFactory;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
@@ -41,13 +41,13 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
 
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
-        CustomAssert.isAuthentication(oAuth2UserInfo.getEmail().isEmpty());
+        DefaultAssert.isAuthentication(oAuth2UserInfo.getEmail().isEmpty());
 
         Optional<User> userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());
         User user;
         if(userOptional.isPresent()) {
             user = userOptional.get();
-            CustomAssert.isAuthentication(!user.getProvider().equals(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId())));
+            DefaultAssert.isAuthentication(!user.getProvider().equals(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId())));
 
             user = updateExistingUser(user, oAuth2UserInfo);
         } else {

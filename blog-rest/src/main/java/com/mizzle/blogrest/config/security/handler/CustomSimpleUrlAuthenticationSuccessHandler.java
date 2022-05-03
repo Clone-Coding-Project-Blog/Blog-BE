@@ -1,6 +1,6 @@
 package com.mizzle.blogrest.config.security.handler;
 
-import com.mizzle.blogrest.advice.assertThat.CustomAssert;
+import com.mizzle.blogrest.advice.assertThat.DefaultAssert;
 import com.mizzle.blogrest.config.security.OAuth2Config;
 import com.mizzle.blogrest.config.security.repository.CustomAuthorizationRequestRepository;
 import com.mizzle.blogrest.config.security.service.CustomTokenProviderService;
@@ -35,7 +35,7 @@ public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthen
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        CustomAssert.isAuthentication(response.isCommitted());
+        DefaultAssert.isAuthentication(response.isCommitted());
         
         String targetUrl = determineTargetUrl(request, response, authentication);
 
@@ -47,7 +47,7 @@ public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthen
         Optional<String> redirectUri = CustomCookie.getCookie(request, REDIRECT_URI_PARAM_COOKIE_NAME)
                 .map(Cookie::getValue);
 
-        CustomAssert.isAuthentication(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get()));
+        DefaultAssert.isAuthentication(redirectUri.isPresent() && !isAuthorizedRedirectUri(redirectUri.get()));
 
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 

@@ -6,6 +6,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.mizzle.blogrest.advice.assertThat.DefaultAssert;
 
 import org.springframework.validation.FieldError;
 
@@ -38,18 +39,19 @@ public class ErrorResponse {
         this.status = status;
         this.message = message;
         this.clazz = clazz;
-        setFieldErrors(fieldErrors);
+        //setFieldErrors(fieldErrors);
     }
 
     public void setFieldErrors(List<FieldError> fieldErrors) {
-        fieldErrors.forEach(error -> {
-            customFieldErrors.add(new CustomFieldError(
-                    error.getField(),
-                    error.getRejectedValue(),
-                    error.getDefaultMessage()
-            ));
-        });
-
+        if(fieldErrors != null){
+            fieldErrors.forEach(error -> {
+                customFieldErrors.add(new CustomFieldError(
+                        error.getField(),
+                        error.getRejectedValue(),
+                        error.getDefaultMessage()
+                ));
+            });
+        }
     }
 
     public static class CustomFieldError {

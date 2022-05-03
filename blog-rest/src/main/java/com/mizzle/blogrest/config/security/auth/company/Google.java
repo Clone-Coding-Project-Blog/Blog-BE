@@ -4,15 +4,10 @@ import java.util.Map;
 
 import com.mizzle.blogrest.config.security.auth.OAuth2UserInfo;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 public class Google extends OAuth2UserInfo{
 
     public Google(Map<String, Object> attributes) {
         super(attributes);
-        //TODO Auto-generated constructor stub
-        log.info("GoogleOAuth2UserInfo={}",attributes);
     }
 
     @Override

@@ -8,6 +8,7 @@ import com.mizzle.blogrest.config.security.service.CustomUserDetailsService;
 import com.mizzle.blogrest.config.security.token.CustomAuthenticationEntryPoint;
 import com.mizzle.blogrest.config.security.token.CustomOncePerRequestFilter;
 
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +16,7 @@ import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -63,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
     public AuthenticationManager authenticationManagerBean() throws Exception {
         return super.authenticationManagerBean();
     }
-
+    
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
@@ -93,9 +95,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter{
                         "/**/*.css",
                         "/**/*.js")
                         .permitAll()
-                    .antMatchers("/login/**","/auth/**", "/oauth2/**")
-                        .permitAll()
                     .antMatchers("/swagger", "/swagger-ui.html", "/swagger-ui/**", "/api-docs", "/api-docs/**", "/v3/api-docs/**")
+                        .permitAll()
+                    .antMatchers("/login/**","/auth/**", "/oauth2/**")
                         .permitAll()
                     .anyRequest()
                         .authenticated()

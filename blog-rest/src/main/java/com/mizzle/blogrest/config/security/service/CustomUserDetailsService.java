@@ -4,7 +4,7 @@ import java.util.Optional;
 
 import javax.transaction.Transactional;
 
-import com.mizzle.blogrest.advice.assertThat.CustomAssert;
+import com.mizzle.blogrest.advice.assertThat.DefaultAssert;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
 import com.mizzle.blogrest.domain.entity.user.User;
 import com.mizzle.blogrest.repository.user.UserRepository;
@@ -36,7 +36,7 @@ public class CustomUserDetailsService implements UserDetailsService{
     @Transactional
     public UserDetails loadUserById(Long id) {
         Optional<User> user = userRepository.findById(id);
-        CustomAssert.isOptionalPresent(user);
+        DefaultAssert.isOptionalPresent(user);
 
         return UserPrincipal.create(user.get());
     }
