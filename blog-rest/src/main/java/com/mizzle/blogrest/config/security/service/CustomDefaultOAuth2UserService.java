@@ -11,8 +11,6 @@ import com.mizzle.blogrest.domain.entity.user.Role;
 import com.mizzle.blogrest.domain.entity.user.User;
 import com.mizzle.blogrest.repository.user.UserRepository;
 
-import org.springframework.security.authentication.InternalAuthenticationServiceException;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
@@ -32,11 +30,10 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
         OAuth2User oAuth2User = super.loadUser(oAuth2UserRequest);
         try {
             return processOAuth2User(oAuth2UserRequest, oAuth2User);
-        } catch (AuthenticationException ex) {
-            throw ex;
-        } catch (Exception ex) {
-            throw new InternalAuthenticationServiceException(ex.getMessage(), ex.getCause());
+        } catch (Exception e) {
+            DefaultAssert.isAuthentication(e.getMessage());
         }
+        return null;
     }
 
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
@@ -48,7 +45,6 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
         if(userOptional.isPresent()) {
             user = userOptional.get();
             DefaultAssert.isAuthentication(!user.getProvider().equals(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId())));
-
             user = updateExistingUser(user, oAuth2UserInfo);
         } else {
             user = registerNewUser(oAuth2UserRequest, oAuth2UserInfo);
@@ -58,14 +54,15 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
     }
 
     private User registerNewUser(OAuth2UserRequest oAuth2UserRequest, OAuth2UserInfo oAuth2UserInfo) {
-        User user = new User();
-
-        user.setProvider(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()));
-        user.setProviderId(oAuth2UserInfo.getId());
-        user.setName(oAuth2UserInfo.getName());
-        user.setEmail(oAuth2UserInfo.getEmail());
-        user.setImageUrl(oAuth2UserInfo.getImageUrl());
-        user.setRole(Role.USER);
+        User user = User.builder()
+                    .provider(Provider.valueOf(oAuth2UserRequest.getClientRegistration().getRegistrationId()))
+                    .providerId(oAuth2UserInfo.getId())
+                    .name(oAuth2UserInfo.getName())
+                    .email(oAuth2UserInfo.getEmail())
+                    .imageUrl(oAuth2UserInfo.getImageUrl())
+                    .role(Role.USER)
+                    .build();
+        
         return userRepository.save(user);
     }
 
