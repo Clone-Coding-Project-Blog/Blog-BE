@@ -8,13 +8,12 @@ import lombok.Setter;
 @Getter
 public class AuthResponse {
 
-    private String accessToken;
-    private String tokenType = "Bearer";
+    private Object token;
 
     public AuthResponse(){};
 
     @Builder
-    public AuthResponse(String accessToken) {
-        this.accessToken = accessToken;
+    public AuthResponse(Object token) {
+        this.token = token;
     }
 }

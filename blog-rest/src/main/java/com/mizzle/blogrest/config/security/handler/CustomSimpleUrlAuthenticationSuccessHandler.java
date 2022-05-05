@@ -5,6 +5,7 @@ import com.mizzle.blogrest.config.security.OAuth2Config;
 import com.mizzle.blogrest.config.security.repository.CustomAuthorizationRequestRepository;
 import com.mizzle.blogrest.config.security.service.CustomTokenProviderService;
 import com.mizzle.blogrest.config.security.util.CustomCookie;
+import com.mizzle.blogrest.domain.mapping.TokenMapping;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -51,10 +52,10 @@ public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthen
 
         String targetUrl = redirectUri.orElse(getDefaultTargetUrl());
 
-        String token = customTokenProviderService.createToken(authentication);
+        TokenMapping token = customTokenProviderService.createToken(authentication);
 
         return UriComponentsBuilder.fromUriString(targetUrl)
-                .queryParam("token", token)
+                .queryParam("token", token.getAccessToken())
                 .build().toUriString();
     }
 

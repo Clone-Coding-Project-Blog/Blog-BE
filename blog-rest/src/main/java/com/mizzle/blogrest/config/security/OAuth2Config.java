@@ -6,32 +6,19 @@ import java.util.List;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import lombok.Data;
+
 @Configuration
 @ConfigurationProperties(prefix = "app")
 public class OAuth2Config {
     private final Auth auth = new Auth();
     private final OAuth2 oauth2 = new OAuth2();
 
+    @Data
     public static class Auth {
-        
         private String tokenSecret;
-        private long tokenExpirationMsec;
-
-        public String getTokenSecret() {
-            return tokenSecret;
-        }
-
-        public void setTokenSecret(String tokenSecret) {
-            this.tokenSecret = tokenSecret;
-        }
-
-        public long getTokenExpirationMsec() {
-            return tokenExpirationMsec;
-        }
-
-        public void setTokenExpirationMsec(long tokenExpirationMsec) {
-            this.tokenExpirationMsec = tokenExpirationMsec;
-        }
+        private long accessTokenExpirationMsec;
+        private long refreshTokenExpirationMsec;
     }
 
     public static final class OAuth2 {

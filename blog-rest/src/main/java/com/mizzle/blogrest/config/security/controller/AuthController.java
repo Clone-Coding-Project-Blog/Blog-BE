@@ -9,6 +9,8 @@ import com.mizzle.blogrest.config.security.token.CurrentUser;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
 import com.mizzle.blogrest.payload.request.LoginRequest;
 import com.mizzle.blogrest.payload.request.SignUpRequest;
+import com.mizzle.blogrest.payload.request.TokenRefreshRequest;
+import com.mizzle.blogrest.payload.request.TokenValidRequest;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -36,10 +38,14 @@ public class AuthController {
         return authService.create(signUpRequest);
     }
 
-    @DeleteMapping(value = "/delete")
-    public ResponseEntity<?> delete(@CurrentUser UserPrincipal userPrincipal) {
-        DefaultAssert.isObjectNull(userPrincipal);
-        return authService.delete(userPrincipal);
+    @PostMapping(value = "/valid")
+    public ResponseEntity<?> valid(@RequestBody TokenValidRequest tokenValidRequest) {
+        return authService.valid(tokenValidRequest);
+    }
+
+    @PostMapping(value = "/refresh")
+    public ResponseEntity<?> refresh(@RequestBody TokenRefreshRequest tokenRefreshRequest) {
+        return authService.refresh(tokenRefreshRequest);
     }
 
 }

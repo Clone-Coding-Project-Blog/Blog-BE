@@ -3,11 +3,9 @@ package com.mizzle.blogrest.payload.request;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Setter
-@Getter
+@Data
 public class SignUpRequest {
     @NotBlank
     private String name;
