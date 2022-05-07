@@ -6,7 +6,7 @@ import javax.validation.constraints.NotBlank;
 import lombok.Data;
 
 @Data
-public class LoginRequest {
+public class SignInRequest {
 
     @NotBlank
     @Email

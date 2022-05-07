@@ -1,15 +1,11 @@
 package com.mizzle.blogrest.controller.user;
 
-import com.mizzle.blogrest.advice.assertThat.DefaultAssert;
 import com.mizzle.blogrest.advice.payload.ErrorResponse;
 import com.mizzle.blogrest.config.security.token.CurrentUser;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
 import com.mizzle.blogrest.service.user.UserService;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,8 +30,8 @@ public class UserController {
             @ApiResponse(responseCode = "200", description = "유저 확인 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = UserPrincipal.class) ) } ),
             @ApiResponse(responseCode = "400", description = "유저 확인 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
-    @GetMapping(value = "/")
+    @GetMapping(value = "/me")
     public ResponseEntity<?> readByUser(@CurrentUser UserPrincipal userPrincipal) {
-        return userService.readByUser(userPrincipal);
+        return userService.readByUserReactSample(userPrincipal);
     }
 }

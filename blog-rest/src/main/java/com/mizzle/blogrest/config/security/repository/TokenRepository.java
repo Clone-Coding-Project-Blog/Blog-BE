@@ -7,11 +7,8 @@ import java.util.Optional;
 
 import com.mizzle.blogrest.domain.entity.user.Token;
 
-
 @Repository
 public interface TokenRepository extends JpaRepository<Token, Long> {
-    Optional<Token> findByKey(String key);
-    Optional<Token> findByAccess(String access);
-    Optional<Token> findByRefresh(String refresh);
-    
+    Optional<Token> findByUserEmail(String userEmail);
+    Optional<Token> findByRefreshToken(String refreshToken);
 }

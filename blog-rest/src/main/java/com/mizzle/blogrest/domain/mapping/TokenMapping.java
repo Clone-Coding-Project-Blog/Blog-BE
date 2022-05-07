@@ -1,17 +1,22 @@
 package com.mizzle.blogrest.domain.mapping;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.Data;
 
-@Getter
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+
+@Data
 public class TokenMapping {
-    private String grantType;
+    private String userEmail;
     private String accessToken;
     private String refreshToken;
-    private Long accessTokenExpiresIn;
+
+    public TokenMapping(){}
+
+    @Builder
+    public TokenMapping(String userEmail, String accessToken, String refreshToken){
+        this.userEmail = userEmail;
+        this.accessToken = accessToken;
+        this.refreshToken = refreshToken;
+    }
+
 }

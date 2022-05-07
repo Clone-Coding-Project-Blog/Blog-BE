@@ -1,10 +1,16 @@
 package com.mizzle.blogrest.payload.request;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Builder;
+import lombok.Data;
 
-@Setter
-@Getter
+@Data
 public class TokenRefreshRequest {
     private String refreshToken;
+
+    public TokenRefreshRequest(){}
+
+    @Builder
+    public TokenRefreshRequest(String refreshToken){
+        this.refreshToken = refreshToken;
+    }
 }

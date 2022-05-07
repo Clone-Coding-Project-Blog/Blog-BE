@@ -15,7 +15,7 @@ import org.springframework.validation.Errors;
 public class DefaultAssert extends Assert{
 
     public static void isTrue(boolean value){
-        if(value){
+        if(!value){
             throw new DefaultException(ErrorCode.INVALID_CHECK);
         }
     }
@@ -55,7 +55,7 @@ public class DefaultAssert extends Assert{
     }
 
     public static void isAuthentication(boolean value){
-        if(value){
+        if(!value){
             throw new DefaultAuthenticationException(ErrorCode.INVALID_AUTHENTICATION);
         }
     }

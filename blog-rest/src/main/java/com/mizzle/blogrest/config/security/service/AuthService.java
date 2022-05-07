@@ -3,21 +3,17 @@ package com.mizzle.blogrest.config.security.service;
 import java.net.URI;
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import com.mizzle.blogrest.advice.assertThat.DefaultAssert;
 import com.mizzle.blogrest.config.security.repository.TokenRepository;
-import com.mizzle.blogrest.config.security.token.UserPrincipal;
 import com.mizzle.blogrest.domain.entity.user.Provider;
 import com.mizzle.blogrest.domain.entity.user.Role;
 import com.mizzle.blogrest.domain.entity.user.Token;
 import com.mizzle.blogrest.domain.entity.user.User;
 import com.mizzle.blogrest.domain.mapping.TokenMapping;
 import com.mizzle.blogrest.payload.Message;
-import com.mizzle.blogrest.payload.request.LoginRequest;
+import com.mizzle.blogrest.payload.request.SignInRequest;
 import com.mizzle.blogrest.payload.request.SignUpRequest;
 import com.mizzle.blogrest.payload.request.TokenRefreshRequest;
-import com.mizzle.blogrest.payload.request.TokenValidRequest;
 import com.mizzle.blogrest.payload.response.ApiResponse;
 import com.mizzle.blogrest.payload.response.AuthResponse;
 import com.mizzle.blogrest.repository.user.UserRepository;
@@ -45,138 +41,92 @@ public class AuthService {
     private final CustomTokenProviderService customTokenProviderService;
     private final TokenRepository tokenRepository;
 
-    public ResponseEntity<?> login(LoginRequest loginRequest){
+    public ResponseEntity<?> signin(SignInRequest signInRequest){
+        
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
-                        loginRequest.getEmail(),
-                        loginRequest.getPassword()
+                    signInRequest.getEmail(),
+                    signInRequest.getPassword()
                 )
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        TokenMapping token = customTokenProviderService.createToken(authentication);
+        TokenMapping tokenMapping = customTokenProviderService.createToken(authentication);
+        Token token = Token.builder()
+                            .refreshToken(tokenMapping.getRefreshToken())
+                            .userEmail(tokenMapping.getUserEmail())
+                            .build();
+        tokenRepository.save(token);
+        AuthResponse authResponse = AuthResponse.builder().accessToken(tokenMapping.getAccessToken()).refreshToken(token.getRefreshToken()).build();
         
-        Token refreshToken = Token.builder()
-                .key(authentication.getName())
-                .refresh(token.getRefreshToken())
-                .access(token.getAccessToken())
-                .build();
-
-        tokenRepository.save(refreshToken);
-
-        return ResponseEntity.ok(new ApiResponse(true, new AuthResponse(token)) );
+        return ResponseEntity.ok(authResponse);
     }
 
-    public ResponseEntity<?> create(SignUpRequest signUpRequest){
-        log.info("create={}",signUpRequest.getEmail());
-        //DefaultAssert.isTrue(userRepository.existsByEmail(signUpRequest.getEmail()));
-        
+    public ResponseEntity<?> signup(SignUpRequest signUpRequest){
+        DefaultAssert.isTrue(!userRepository.existsByEmail(signUpRequest.getEmail()));
+
         User user = User.builder()
-            .email(signUpRequest.getEmail())
-            .name(signUpRequest.getName())
-            .password(passwordEncoder.encode(signUpRequest.getPassword()))
-            .provider(Provider.local)
-            .role(Role.ADMIN)
-            .build();
+                        .name(signUpRequest.getName())
+                        .email(signUpRequest.getEmail())
+                        .password(passwordEncoder.encode(signUpRequest.getPassword()))
+                        .provider(Provider.local)
+                        .role(Role.ADMIN)
+                        .build();
 
         userRepository.save(user);
 
-        
-        Authentication authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                    signUpRequest.getEmail(),
-                    signUpRequest.getPassword()
-                )
-        );
-
-        TokenMapping tokenMapping = customTokenProviderService.createToken(authentication);
-
-        Token token = Token.builder()
-                .key(authentication.getName())
-                .refresh(tokenMapping.getRefreshToken())
-                .access(tokenMapping.getAccessToken())
-                .build();
-
-        tokenRepository.save(token);
-        
         URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/user/")
+                .fromCurrentContextPath().path("/user/me")
                 .buildAndExpand(user.getId()).toUri();
+        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("회원가입에 성공하였습니다.").build()).build();
 
-
-        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message(String.format("회원가입에 성공했습니다.")).build()).build();
         return ResponseEntity.created(location).body(apiResponse);
     }
-    
-    @Transactional
-    public ResponseEntity<?> valid(TokenValidRequest tokenValidRequest) {
 
-        // 1. Refresh Token 검증
-        if (!customTokenProviderService.validateToken(tokenValidRequest.getRefreshToken())) {
-            throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
-        }
-        
-        Authentication authentication = customTokenProviderService.getAuthentication(tokenValidRequest.getAccessToken());
+    public ResponseEntity<?> refresh(TokenRefreshRequest tokenRefreshRequest){
+        boolean checkValid = valid(tokenRefreshRequest.getRefreshToken());
+        DefaultAssert.isAuthentication(checkValid);
 
-        if(!authentication.isAuthenticated()){
-            throw new RuntimeException("authentication 인증이 올바르지 않습니다.");
-        };
+        Optional<Token> token = tokenRepository.findByRefreshToken(tokenRefreshRequest.getRefreshToken());
+        Authentication authentication = customTokenProviderService.getAuthenticationByEmail(token.get().getUserEmail());
 
-        Optional<Token> refreshToken = tokenRepository.findByKey(authentication.getName());
-
-        if(refreshToken.isPresent()){
-            new RuntimeException("Refresh Token 이 데이터베이스에 존재하지 않습니다.");
-        }
-
-        if(!refreshToken.get().getRefresh().equals(tokenValidRequest.getRefreshToken())){
-            throw new RuntimeException("Refresh Token 정보가 일치하지 않습니다.");
-        }
-
-        ApiResponse apiResponse = ApiResponse.builder().check(true).information(tokenValidRequest).build();
-        return ResponseEntity.ok(apiResponse);
-    }
-
-    
-    @Transactional
-    public ResponseEntity<?> refresh(TokenRefreshRequest tokenRefreshRequest) {
-
-        // 1. refresh token 확인
-        if (!customTokenProviderService.validateToken(tokenRefreshRequest.getRefreshToken())) {
-            throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
-        }
-
-        // 3. token 검색
-        Token token = tokenRepository.findByRefresh(tokenRefreshRequest.getRefreshToken()).orElseThrow(
-            () -> new RuntimeException("Refresh Token이 데이터베이스에 존재하지 않습니다.")
-        );
-
-        // 4. Access Token 에서 Member ID 가져오기
-        Authentication authentication = customTokenProviderService.getAuthentication(token.getAccess());
-
-        if(!authentication.isAuthenticated()){
-            throw new RuntimeException("authentication 인증이 올바르지 않습니다.");
-        };
-
-        // 5. 저장소에서 Member ID 를 기반으로 Refresh Token 값 가져옴
-        Token refreshToken = tokenRepository.findByKey(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("로그아웃 된 사용자입니다."));
-
-        // 6. Refresh Token 일치하는지 검사
-        if (!refreshToken.getRefresh().equals(tokenRefreshRequest.getRefreshToken())) {
-            throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
-        }
-
-        // 7. 새로운 토큰 생성
+        //4. refresh token 정보 값을 업데이트 한다.
         TokenMapping tokenMapping = customTokenProviderService.createToken(authentication);
+        Token updateToken = token.get().updateRefreshToken(tokenMapping.getRefreshToken());
+        tokenRepository.save(updateToken);
 
-        // 8. 저장소 정보 업데이트
-        Token newRefreshToken = refreshToken.updateValue(tokenMapping.getRefreshToken());
-        tokenRepository.save(newRefreshToken);
+        AuthResponse authResponse = AuthResponse.builder().accessToken(tokenMapping.getAccessToken()).refreshToken(updateToken.getRefreshToken()).build();
 
-        // 토큰 발급
-        ApiResponse apiResponse = ApiResponse.builder().check(true).information(newRefreshToken).build();
+        return ResponseEntity.ok(authResponse);
+    }
+
+    public ResponseEntity<?> signout(TokenRefreshRequest tokenRefreshRequest){
+        boolean checkValid = valid(tokenRefreshRequest.getRefreshToken());
+        DefaultAssert.isAuthentication(checkValid);
+        
+        //4 token 정보를 삭제한다.
+        Optional<Token> token = tokenRepository.findByRefreshToken(tokenRefreshRequest.getRefreshToken());
+        tokenRepository.delete(token.get());
+        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("로그아웃 하였습니다.").build()).build();
+
         return ResponseEntity.ok(apiResponse);
     }
 
+    private boolean valid(String refreshToken){
+
+        //1. 토큰 형식 물리적 검증
+        boolean validateCheck = customTokenProviderService.validateToken(refreshToken);
+        DefaultAssert.isTrue(validateCheck);
+
+        //2. refresh token 값을 불러온다.
+        Optional<Token> token = tokenRepository.findByRefreshToken(refreshToken);
+        DefaultAssert.isTrue(token.isPresent());
+
+        //3. email 값을 통해 인증값을 불러온다
+        Authentication authentication = customTokenProviderService.getAuthenticationByEmail(token.get().getUserEmail());
+        DefaultAssert.isTrue(token.get().getUserEmail().equals(authentication.getName()));
+
+        return true;
+    }
 }

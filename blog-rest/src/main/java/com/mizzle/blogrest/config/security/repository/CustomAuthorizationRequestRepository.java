@@ -37,7 +37,6 @@ public class CustomAuthorizationRequestRepository implements AuthorizationReques
         if (StringUtils.isNotBlank(redirectUriAfterLogin)) {
             CustomCookie.addCookie(response, REDIRECT_URI_PARAM_COOKIE_NAME, redirectUriAfterLogin, cookieExpireSeconds);
         }
-        
     }
 
     @Override

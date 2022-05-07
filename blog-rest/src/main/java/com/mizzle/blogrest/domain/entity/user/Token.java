@@ -5,35 +5,33 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.mizzle.blogrest.domain.entity.time.DefaultTime;
+
 import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @Table(name="token")
 @Entity
-public class Token {
+public class Token extends DefaultTime{
 
     @Id
-    @Column(name = "token_id", length = 1024 , nullable = false)
-    private String key;
+    @Column(name = "user_email", length = 1024 , nullable = false)
+    private String userEmail;
 
     @Column(name = "refresh_token", length = 1024 , nullable = false)
-    private String refresh;
-
-    @Column(name = "access_token", length = 1024 , nullable = false)
-    private String access;
+    private String refreshToken;
 
     public Token(){}
 
-    public Token updateValue(String refresh) {
-        this.refresh = refresh;
+    public Token updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
         return this;
     }
 
     @Builder
-    public Token(String key, String access, String refresh) {
-        this.key = key;
-        this.access = access;
-        this.refresh = refresh;
+    public Token(String userEmail, String refreshToken) {
+        this.userEmail = userEmail;
+        this.refreshToken = refreshToken;
     }
 }
