@@ -31,11 +31,31 @@ public class CustomTokenProviderService {
 
     @Autowired
     private CustomUserDetailsService customUserDetailsService;
-    /*
-    public CustomTokenProviderService(OAuth2Config oAuth2Config) {
-        this.oAuth2Config = oAuth2Config;
+
+    public TokenMapping refreshToken(Authentication authentication, String refreshToken) {
+        UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
+        Date now = new Date();
+
+        Date accessTokenExpiresIn = new Date(now.getTime() + oAuth2Config.getAuth().getAccessTokenExpirationMsec());
+
+        String secretKey = oAuth2Config.getAuth().getTokenSecret();
+        byte[] keyBytes = Decoders.BASE64.decode(secretKey);
+        Key key = Keys.hmacShaKeyFor(keyBytes);
+
+        String accessToken = Jwts.builder()
+                                .setSubject(Long.toString(userPrincipal.getId()))
+                                .setIssuedAt(new Date())
+                                .setExpiration(accessTokenExpiresIn)
+                                .signWith(key, SignatureAlgorithm.HS512)
+                                .compact();
+
+        return TokenMapping.builder()
+                        .userEmail(userPrincipal.getEmail())
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
     }
-    */
+
     public TokenMapping createToken(Authentication authentication) {
         UserPrincipal userPrincipal = (UserPrincipal) authentication.getPrincipal();
 
@@ -91,7 +111,14 @@ public class CustomTokenProviderService {
         return authentication;
     }
 
-
+    public Long getExpiration(String token) {
+        // accessToken 남은 유효시간
+        Date expiration = Jwts.parserBuilder().setSigningKey(oAuth2Config.getAuth().getTokenSecret()).build().parseClaimsJws(token).getBody().getExpiration();
+        // 현재 시간
+        Long now = new Date().getTime();
+        //시간 계산
+        return (expiration.getTime() - now);
+    }
 
     public boolean validateToken(String token) {
         try {

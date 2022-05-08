@@ -15,4 +15,9 @@ public class DefaultException extends RuntimeException{
         this.errorCode = errorCode;
     }
 
+    public DefaultException(ErrorCode errorCode, String message) {
+        super(message);
+        this.errorCode = errorCode;
+    }
+
 }

@@ -21,12 +21,13 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.mizzle.blogrest.domain.entity.blog.Reply;
 import com.mizzle.blogrest.domain.entity.time.DefaultTime;
 
+import org.hibernate.annotations.DynamicUpdate;
+
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
+@DynamicUpdate
 @Entity
-@Setter
 @Getter
 @Table(name = "user")
 public class User extends DefaultTime{
@@ -71,5 +72,13 @@ public class User extends DefaultTime{
         this.name = name;
         this.provider = provider;
         this.role = role;
+    }
+
+    public void updateName(String name){
+        this.name = name;
+    }
+
+    public void updateImageUrl(String imageUrl){
+        this.imageUrl = imageUrl;
     }
 }

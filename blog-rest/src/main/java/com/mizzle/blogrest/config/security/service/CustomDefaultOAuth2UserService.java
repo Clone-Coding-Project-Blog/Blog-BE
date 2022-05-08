@@ -41,7 +41,7 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
     private OAuth2User processOAuth2User(OAuth2UserRequest oAuth2UserRequest, OAuth2User oAuth2User) {
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfoFactory.getOAuth2UserInfo(oAuth2UserRequest.getClientRegistration().getRegistrationId(), oAuth2User.getAttributes());
         DefaultAssert.isAuthentication(!oAuth2UserInfo.getEmail().isEmpty());
-
+        
         Optional<User> userOptional = userRepository.findByEmail(oAuth2UserInfo.getEmail());
         User user;
         if(userOptional.isPresent()) {
@@ -68,9 +68,11 @@ public class CustomDefaultOAuth2UserService extends DefaultOAuth2UserService{
         return userRepository.save(user);
     }
 
-    private User updateExistingUser(User existingUser, OAuth2UserInfo oAuth2UserInfo) {
-        existingUser.setName(oAuth2UserInfo.getName());
-        existingUser.setImageUrl(oAuth2UserInfo.getImageUrl());
-        return userRepository.save(existingUser);
+    private User updateExistingUser(User user, OAuth2UserInfo oAuth2UserInfo) {
+
+        user.updateName(oAuth2UserInfo.getName());
+        user.updateImageUrl(oAuth2UserInfo.getImageUrl());
+
+        return userRepository.save(user);
     }
 }

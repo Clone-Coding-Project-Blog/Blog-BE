@@ -25,10 +25,4 @@ public class UserService {
         ApiResponse apiResponse = ApiResponse.builder().check(true).information(user.get()).build();
         return ResponseEntity.ok(apiResponse);
     }
-
-    public ResponseEntity<?> readByUserReactSample(UserPrincipal userPrincipal){
-        Optional<User> user = userRepository.findById(userPrincipal.getId());
-        DefaultAssert.isOptionalPresent(user);
-        return ResponseEntity.ok(user.get());
-    }
 }

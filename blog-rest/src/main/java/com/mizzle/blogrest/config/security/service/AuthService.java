@@ -5,15 +5,17 @@ import java.util.Optional;
 
 import com.mizzle.blogrest.advice.assertThat.DefaultAssert;
 import com.mizzle.blogrest.config.security.repository.TokenRepository;
+import com.mizzle.blogrest.config.security.token.UserPrincipal;
 import com.mizzle.blogrest.domain.entity.user.Provider;
 import com.mizzle.blogrest.domain.entity.user.Role;
 import com.mizzle.blogrest.domain.entity.user.Token;
 import com.mizzle.blogrest.domain.entity.user.User;
 import com.mizzle.blogrest.domain.mapping.TokenMapping;
 import com.mizzle.blogrest.payload.Message;
-import com.mizzle.blogrest.payload.request.SignInRequest;
-import com.mizzle.blogrest.payload.request.SignUpRequest;
-import com.mizzle.blogrest.payload.request.TokenRefreshRequest;
+import com.mizzle.blogrest.payload.request.auth.PasswordChangeRequest;
+import com.mizzle.blogrest.payload.request.auth.SignInRequest;
+import com.mizzle.blogrest.payload.request.auth.SignUpRequest;
+import com.mizzle.blogrest.payload.request.auth.TokenRefreshRequest;
 import com.mizzle.blogrest.payload.response.ApiResponse;
 import com.mizzle.blogrest.payload.response.AuthResponse;
 import com.mizzle.blogrest.repository.user.UserRepository;
@@ -41,8 +43,39 @@ public class AuthService {
     private final CustomTokenProviderService customTokenProviderService;
     private final TokenRepository tokenRepository;
 
+    public ResponseEntity<?> whoAmI(UserPrincipal userPrincipal){
+        Optional<User> user = userRepository.findById(userPrincipal.getId());
+        DefaultAssert.isOptionalPresent(user);
+        return ResponseEntity.ok(user.get());
+    }
+
+    public ResponseEntity<?> delete(UserPrincipal userPrincipal){
+        Optional<User> user = userRepository.findById(userPrincipal.getId());
+        Optional<Token> token = tokenRepository.findByUserEmail(user.get().getEmail());
+
+        userRepository.delete(user.get());
+        tokenRepository.delete(token.get());
+
+        ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("회원 탈퇴하셨습니다.").build()).build();
+
+        return ResponseEntity.ok(apiResponse);
+    }
+
+    public ResponseEntity<?> modify(UserPrincipal userPrincipal, PasswordChangeRequest passwordChangeRequest){
+        Optional<User> user = userRepository.findById(userPrincipal.getId());
+        boolean passwordCheck = passwordEncoder.matches(passwordChangeRequest.getOldPassword(),user.get().getPassword());
+        DefaultAssert.isTrue(passwordCheck, "잘못된 비밀번호 입니다.");
+
+        boolean newPasswordCheck = passwordChangeRequest.getNewPassword().equals(passwordChangeRequest.getReNewPassword());
+        DefaultAssert.isTrue(newPasswordCheck, "신규 등록 비밀번호 값이 일치하지 않습니다.");
+
+
+        passwordEncoder.encode(passwordChangeRequest.getNewPassword());
+
+        return ResponseEntity.ok(true);
+    }
+
     public ResponseEntity<?> signin(SignInRequest signInRequest){
-        
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                     signInRequest.getEmail(),
@@ -77,7 +110,7 @@ public class AuthService {
         userRepository.save(user);
 
         URI location = ServletUriComponentsBuilder
-                .fromCurrentContextPath().path("/user/me")
+                .fromCurrentContextPath().path("/auth/")
                 .buildAndExpand(user.getId()).toUri();
         ApiResponse apiResponse = ApiResponse.builder().check(true).information(Message.builder().message("회원가입에 성공하였습니다.").build()).build();
 
@@ -85,6 +118,7 @@ public class AuthService {
     }
 
     public ResponseEntity<?> refresh(TokenRefreshRequest tokenRefreshRequest){
+        //1차 검증
         boolean checkValid = valid(tokenRefreshRequest.getRefreshToken());
         DefaultAssert.isAuthentication(checkValid);
 
@@ -92,7 +126,16 @@ public class AuthService {
         Authentication authentication = customTokenProviderService.getAuthenticationByEmail(token.get().getUserEmail());
 
         //4. refresh token 정보 값을 업데이트 한다.
-        TokenMapping tokenMapping = customTokenProviderService.createToken(authentication);
+        //시간 유효성 확인
+        TokenMapping tokenMapping;
+
+        Long expirationTime = customTokenProviderService.getExpiration(tokenRefreshRequest.getRefreshToken());
+        if(expirationTime > 0){
+            tokenMapping = customTokenProviderService.refreshToken(authentication, token.get().getRefreshToken());
+        }else{
+            tokenMapping = customTokenProviderService.createToken(authentication);
+        }
+
         Token updateToken = token.get().updateRefreshToken(tokenMapping.getRefreshToken());
         tokenRepository.save(updateToken);
 
@@ -104,7 +147,7 @@ public class AuthService {
     public ResponseEntity<?> signout(TokenRefreshRequest tokenRefreshRequest){
         boolean checkValid = valid(tokenRefreshRequest.getRefreshToken());
         DefaultAssert.isAuthentication(checkValid);
-        
+
         //4 token 정보를 삭제한다.
         Optional<Token> token = tokenRepository.findByRefreshToken(tokenRefreshRequest.getRefreshToken());
         tokenRepository.delete(token.get());
@@ -129,4 +172,6 @@ public class AuthService {
 
         return true;
     }
+
+
 }

@@ -20,6 +20,12 @@ public class DefaultAssert extends Assert{
         }
     }
 
+    public static void isTrue(boolean value, String message){
+        if(!value){
+            throw new DefaultException(ErrorCode.INVALID_CHECK, message);
+        }
+    }
+
     public static void isValidParameter(Errors errors){
         if(errors.hasErrors()){
             throw new InvalidParameterException(errors);

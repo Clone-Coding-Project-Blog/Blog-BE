@@ -3,6 +3,7 @@ package com.mizzle.blogrest.config.security.auth.company;
 import java.util.Map;
 
 import com.mizzle.blogrest.config.security.auth.OAuth2UserInfo;
+import com.mizzle.blogrest.domain.entity.user.Provider;
 
 public class Naver extends OAuth2UserInfo{
 
@@ -52,5 +53,10 @@ public class Naver extends OAuth2UserInfo{
         }
 
         return (String) response.get("profile_image");
+    }
+
+    @Override
+    public String getProvider(){
+        return Provider.naver.toString();
     }
 }

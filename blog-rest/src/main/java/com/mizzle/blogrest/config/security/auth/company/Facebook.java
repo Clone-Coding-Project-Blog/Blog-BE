@@ -3,6 +3,7 @@ package com.mizzle.blogrest.config.security.auth.company;
 import java.util.Map;
 
 import com.mizzle.blogrest.config.security.auth.OAuth2UserInfo;
+import com.mizzle.blogrest.domain.entity.user.Provider;
 
 public class Facebook extends OAuth2UserInfo{
 
@@ -41,5 +42,10 @@ public class Facebook extends OAuth2UserInfo{
         }
         return null;
     }
-    
+
+    @Override
+    public String getProvider(){
+        return Provider.facebook.toString();
+    }
+
 }

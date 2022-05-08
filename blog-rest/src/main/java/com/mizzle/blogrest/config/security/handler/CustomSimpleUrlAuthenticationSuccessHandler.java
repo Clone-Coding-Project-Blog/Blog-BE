@@ -32,7 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 @RequiredArgsConstructor
 @Component
 public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthenticationSuccessHandler{
-    
+
     private final CustomTokenProviderService customTokenProviderService;
     private final OAuth2Config oAuth2Config;
     private final TokenRepository tokenRepository;
@@ -41,7 +41,7 @@ public class CustomSimpleUrlAuthenticationSuccessHandler extends SimpleUrlAuthen
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
         DefaultAssert.isAuthentication(!response.isCommitted());
-        
+
         String targetUrl = determineTargetUrl(request, response, authentication);
 
         clearAuthenticationAttributes(request, response);
