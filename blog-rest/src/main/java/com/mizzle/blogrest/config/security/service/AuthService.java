@@ -97,7 +97,7 @@ public class AuthService {
     }
 
     public ResponseEntity<?> signup(SignUpRequest signUpRequest){
-        DefaultAssert.isTrue(!userRepository.existsByEmail(signUpRequest.getEmail()));
+        DefaultAssert.isTrue(!userRepository.existsByEmail(signUpRequest.getEmail()), "해당 이메일이 존재하지 않습니다.");
 
         User user = User.builder()
                         .name(signUpRequest.getName())
@@ -160,15 +160,15 @@ public class AuthService {
 
         //1. 토큰 형식 물리적 검증
         boolean validateCheck = customTokenProviderService.validateToken(refreshToken);
-        DefaultAssert.isTrue(validateCheck);
+        DefaultAssert.isTrue(validateCheck, "Token 검증에 실패하였습니다.");
 
         //2. refresh token 값을 불러온다.
         Optional<Token> token = tokenRepository.findByRefreshToken(refreshToken);
-        DefaultAssert.isTrue(token.isPresent());
+        DefaultAssert.isTrue(token.isPresent(), "탈퇴 처리된 회원입니다.");
 
         //3. email 값을 통해 인증값을 불러온다
         Authentication authentication = customTokenProviderService.getAuthenticationByEmail(token.get().getUserEmail());
-        DefaultAssert.isTrue(token.get().getUserEmail().equals(authentication.getName()));
+        DefaultAssert.isTrue(token.get().getUserEmail().equals(authentication.getName()), "사용자 인증에 실패하였습니다.");
 
         return true;
     }
