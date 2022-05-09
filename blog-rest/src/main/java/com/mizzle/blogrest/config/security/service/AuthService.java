@@ -1,23 +1,29 @@
 package com.mizzle.blogrest.config.security.service;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Optional;
 
 import com.mizzle.blogrest.advice.assertThat.DefaultAssert;
 import com.mizzle.blogrest.config.security.repository.TokenRepository;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
+import com.mizzle.blogrest.domain.entity.blog.Board;
 import com.mizzle.blogrest.domain.entity.user.Provider;
 import com.mizzle.blogrest.domain.entity.user.Role;
 import com.mizzle.blogrest.domain.entity.user.Token;
 import com.mizzle.blogrest.domain.entity.user.User;
 import com.mizzle.blogrest.domain.mapping.TokenMapping;
 import com.mizzle.blogrest.payload.Message;
-import com.mizzle.blogrest.payload.request.auth.PasswordChangeRequest;
+import com.mizzle.blogrest.payload.request.auth.ChangePasswordRequest;
 import com.mizzle.blogrest.payload.request.auth.SignInRequest;
 import com.mizzle.blogrest.payload.request.auth.SignUpRequest;
-import com.mizzle.blogrest.payload.request.auth.TokenRefreshRequest;
+import com.mizzle.blogrest.payload.request.auth.RefreshTokenRequest;
 import com.mizzle.blogrest.payload.response.ApiResponse;
 import com.mizzle.blogrest.payload.response.AuthResponse;
+import com.mizzle.blogrest.repository.blog.BoardRepository;
+import com.mizzle.blogrest.repository.blog.LikeRepository;
+import com.mizzle.blogrest.repository.blog.ReplyRepository;
+import com.mizzle.blogrest.repository.blog.TagRepository;
 import com.mizzle.blogrest.repository.user.UserRepository;
 
 import org.springframework.http.ResponseEntity;
@@ -38,10 +44,16 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthService {
 
     private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CustomTokenProviderService customTokenProviderService;
+    
+    private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
+    private final BoardRepository boardRepository;
+    private final LikeRepository likeRepository;
+    private final TagRepository tagRepository;
+    private final ReplyRepository replyRepository;
+    
 
     public ResponseEntity<?> whoAmI(UserPrincipal userPrincipal){
         Optional<User> user = userRepository.findById(userPrincipal.getId());
@@ -51,7 +63,20 @@ public class AuthService {
 
     public ResponseEntity<?> delete(UserPrincipal userPrincipal){
         Optional<User> user = userRepository.findById(userPrincipal.getId());
+        DefaultAssert.isTrue(user.isPresent(), "유저가 올바르지 않습니다.");
+
         Optional<Token> token = tokenRepository.findByUserEmail(user.get().getEmail());
+        DefaultAssert.isTrue(token.isPresent(), "토큰이 유효하지 않습니다.");
+
+        likeRepository.deleteAllByUser(user.get());
+        replyRepository.deleteAllByUserId(user.get().getId());
+
+        List<Board> boards = boardRepository.findByUser(user.get());
+        for(Board board: boards){
+            tagRepository.deleteAllByBoardId(board.getId());
+        }
+
+        boardRepository.deleteAllByUser(user.get());
 
         userRepository.delete(user.get());
         tokenRepository.delete(token.get());
@@ -61,7 +86,7 @@ public class AuthService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    public ResponseEntity<?> modify(UserPrincipal userPrincipal, PasswordChangeRequest passwordChangeRequest){
+    public ResponseEntity<?> modify(UserPrincipal userPrincipal, ChangePasswordRequest passwordChangeRequest){
         Optional<User> user = userRepository.findById(userPrincipal.getId());
         boolean passwordCheck = passwordEncoder.matches(passwordChangeRequest.getOldPassword(),user.get().getPassword());
         DefaultAssert.isTrue(passwordCheck, "잘못된 비밀번호 입니다.");
@@ -77,10 +102,10 @@ public class AuthService {
 
     public ResponseEntity<?> signin(SignInRequest signInRequest){
         Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                    signInRequest.getEmail(),
-                    signInRequest.getPassword()
-                )
+            new UsernamePasswordAuthenticationToken(
+                signInRequest.getEmail(),
+                signInRequest.getPassword()
+            )
         );
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
@@ -117,7 +142,7 @@ public class AuthService {
         return ResponseEntity.created(location).body(apiResponse);
     }
 
-    public ResponseEntity<?> refresh(TokenRefreshRequest tokenRefreshRequest){
+    public ResponseEntity<?> refresh(RefreshTokenRequest tokenRefreshRequest){
         //1차 검증
         boolean checkValid = valid(tokenRefreshRequest.getRefreshToken());
         DefaultAssert.isAuthentication(checkValid);
@@ -144,7 +169,7 @@ public class AuthService {
         return ResponseEntity.ok(authResponse);
     }
 
-    public ResponseEntity<?> signout(TokenRefreshRequest tokenRefreshRequest){
+    public ResponseEntity<?> signout(RefreshTokenRequest tokenRefreshRequest){
         boolean checkValid = valid(tokenRefreshRequest.getRefreshToken());
         DefaultAssert.isAuthentication(checkValid);
 

@@ -31,7 +31,8 @@ public interface BoardRepository extends JpaRepository<Board, Long>{
     Page<BoardMapping> findByTitleContaining(String title, Pageable pageable);
 
     Optional<Board> findById(long id);
-    Optional<BoardMapping> findByIdAndUsername(long id, String username);
+    //Optional<BoardMapping> findByIdAndUsername(long id, String username);
+    Optional<Board> findByIdAndUsername(long id, String username);
 
     long countByPurpose(Purpose purpose);
     long countByPurposeAndUsername(Purpose purpose, String username);

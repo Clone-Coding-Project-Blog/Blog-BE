@@ -7,10 +7,10 @@ import com.mizzle.blogrest.advice.payload.ErrorResponse;
 import com.mizzle.blogrest.config.security.service.AuthService;
 import com.mizzle.blogrest.config.security.token.CurrentUser;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
-import com.mizzle.blogrest.payload.request.auth.PasswordChangeRequest;
+import com.mizzle.blogrest.payload.request.auth.ChangePasswordRequest;
 import com.mizzle.blogrest.payload.request.auth.SignInRequest;
 import com.mizzle.blogrest.payload.request.auth.SignUpRequest;
-import com.mizzle.blogrest.payload.request.auth.TokenRefreshRequest;
+import com.mizzle.blogrest.payload.request.auth.RefreshTokenRequest;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -52,7 +52,7 @@ public class AuthController {
     }
 
     @PutMapping(value = "/")
-    public ResponseEntity<?> modify(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody PasswordChangeRequest passwordChangeRequest){
+    public ResponseEntity<?> modify(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ChangePasswordRequest passwordChangeRequest){
         return authService.modify(userPrincipal, passwordChangeRequest);
     }
 
@@ -67,12 +67,12 @@ public class AuthController {
     }
 
     @PostMapping(value = "/refresh")
-    public ResponseEntity<?> refresh(@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
+    public ResponseEntity<?> refresh(@Valid @RequestBody RefreshTokenRequest tokenRefreshRequest) {
         return authService.refresh(tokenRefreshRequest);
     }
 
     @PostMapping(value="/signout")
-    public ResponseEntity<?> postMethodName(@Valid @RequestBody TokenRefreshRequest tokenRefreshRequest) {
+    public ResponseEntity<?> signout(@Valid @RequestBody RefreshTokenRequest tokenRefreshRequest) {
         return authService.signout(tokenRefreshRequest);
     }
 

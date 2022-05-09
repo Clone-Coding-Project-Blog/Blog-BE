@@ -1,16 +1,19 @@
 package com.mizzle.blogrest.payload.request.auth;
 
+import javax.validation.constraints.NotBlank;
+
 import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class TokenRefreshRequest {
+public class RefreshTokenRequest {
+    @NotBlank
     private String refreshToken;
 
-    public TokenRefreshRequest(){}
+    public RefreshTokenRequest(){}
 
     @Builder
-    public TokenRefreshRequest(String refreshToken){
+    public RefreshTokenRequest(String refreshToken){
         this.refreshToken = refreshToken;
     }
 }
