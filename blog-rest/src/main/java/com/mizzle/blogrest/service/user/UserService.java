@@ -5,7 +5,6 @@ import java.util.Optional;
 import com.mizzle.blogrest.advice.assertThat.DefaultAssert;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
 import com.mizzle.blogrest.domain.entity.user.User;
-import com.mizzle.blogrest.payload.Message;
 import com.mizzle.blogrest.payload.response.ApiResponse;
 import com.mizzle.blogrest.repository.user.UserRepository;
 

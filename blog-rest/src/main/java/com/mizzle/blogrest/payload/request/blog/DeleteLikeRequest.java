@@ -6,14 +6,14 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class ReadReplysRequest {
+public class DeleteLikeRequest {
     @NotBlank
     private long boardId;
 
-    ReadReplysRequest(){};
+    public DeleteLikeRequest(){}
 
     @Builder
-    public ReadReplysRequest(long boardId){
+    public DeleteLikeRequest(long boardId){
         this.boardId = boardId;
-    };
+    }
 }

@@ -58,7 +58,9 @@ public class AuthService {
     public ResponseEntity<?> whoAmI(UserPrincipal userPrincipal){
         Optional<User> user = userRepository.findById(userPrincipal.getId());
         DefaultAssert.isOptionalPresent(user);
-        return ResponseEntity.ok(user.get());
+        ApiResponse apiResponse = ApiResponse.builder().check(true).information(user.get()).build();
+
+        return ResponseEntity.ok(apiResponse);
     }
 
     public ResponseEntity<?> delete(UserPrincipal userPrincipal){

@@ -7,6 +7,7 @@ import com.mizzle.blogrest.advice.payload.ErrorResponse;
 import com.mizzle.blogrest.config.security.service.AuthService;
 import com.mizzle.blogrest.config.security.token.CurrentUser;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
+import com.mizzle.blogrest.domain.entity.user.User;
 import com.mizzle.blogrest.payload.request.auth.ChangePasswordRequest;
 import com.mizzle.blogrest.payload.request.auth.SignInRequest;
 import com.mizzle.blogrest.payload.request.auth.SignUpRequest;
@@ -38,7 +39,7 @@ public class AuthController {
 
     @Operation(summary = "유저 정보 확인", description = "현제 접속된 유저정보를 확인합니다.")
     @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "유저 확인 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = UserPrincipal.class) ) } ),
+        @ApiResponse(responseCode = "200", description = "유저 확인 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = User.class) ) } ),
         @ApiResponse(responseCode = "400", description = "유저 확인 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @GetMapping(value = "/")

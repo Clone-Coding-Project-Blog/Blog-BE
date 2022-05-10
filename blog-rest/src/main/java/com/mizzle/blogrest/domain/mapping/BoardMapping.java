@@ -13,5 +13,5 @@ public interface BoardMapping {
     String getUsername();
     String getMarkdown();
     String getHtml();
-    Collection<Tag> getTags();
+    Collection<Tag> getTag();
 }
