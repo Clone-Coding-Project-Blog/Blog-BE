@@ -108,6 +108,7 @@ public class BoardService {
         return ResponseEntity.ok(apiResponse);
     }
 
+
     private long reloadBoard(User user, Board board, CreateBoardRequest createBoardRequest){
         board.updateAll(
             board.getId(), 
@@ -173,23 +174,20 @@ public class BoardService {
 
         Optional<Board> board = boardRepository.findByIdAndUsername(updateBoardRequest.getBoardId(), user.get().getEmail());
         DefaultAssert.isTrue(board.isPresent(), "해당 개시글을 해당 유저가 수정할 수 없습니다.");
-        
-        board.get().updateAll(
-            board.get().getId(), 
-            updateBoardRequest.getTitle(), 
-            updateBoardRequest.getSubtitle(), 
-            updateBoardRequest.getMarkdown(), 
-            updateBoardRequest.getHtml(),
-            user.get(),
-            updateBoardRequest.getPurpose()
+
+        long id = reloadBoard(
+            user.get(), 
+            board.get(), 
+            CreateBoardRequest.builder()
+                            .title(updateBoardRequest.getTitle())
+                            .subtitle(updateBoardRequest.getSubtitle())
+                            .markdown(updateBoardRequest.getMarkdown())
+                            .html(updateBoardRequest.getHtml())
+                            .purpose(updateBoardRequest.getPurpose())
+                            .build()
         );
-        boardRepository.save(board.get());
-
-        tagRepository.deleteAllByBoardId(board.get().getId());
-        Set<Tag> tags = create(updateBoardRequest.getTagNames(), board.get().getId());
-        tagRepository.saveAll(tags);
-
-        return null;
+        ApiResponse apiResponse = ApiResponse.builder().check(true).information(board.get()).build();
+        return ResponseEntity.ok(apiResponse);
     }
 
     public ResponseEntity<?> createReply(@CurrentUser UserPrincipal userPrincipal, CreateReplyRequest createReplyRequest){

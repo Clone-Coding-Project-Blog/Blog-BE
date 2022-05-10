@@ -1,11 +1,9 @@
 package com.mizzle.blogrest.payload.response;
 
 import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
-@Setter
-@Getter
+@Data
 public class AuthResponse {
 
     private String accessToken;

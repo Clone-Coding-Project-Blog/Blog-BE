@@ -1,5 +1,6 @@
 package com.mizzle.blogrest.payload.response;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -7,7 +8,10 @@ import lombok.ToString;
 @ToString
 @Data
 public class ApiResponse {
+
+    @Schema( type = "boolean", example = "true")
     private boolean check;
+    
     private Object information;
     
     public ApiResponse(){};
