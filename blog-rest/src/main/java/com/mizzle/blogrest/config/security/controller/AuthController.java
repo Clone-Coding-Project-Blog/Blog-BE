@@ -33,7 +33,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "Authorities", description = "Authorities API")
+@Tag(name = "Authorization", description = "Authorization API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/auth")
