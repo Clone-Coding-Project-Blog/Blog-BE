@@ -29,8 +29,7 @@ public class ErrorResponse {
     @JsonProperty("errors")
     private List<CustomFieldError> customFieldErrors = new ArrayList<>(); 
 
-    public ErrorResponse() {
-    }
+    public ErrorResponse() {}
 
     @Builder
     public ErrorResponse(String code, int status, String message, String clazz, List<FieldError> fieldErrors){

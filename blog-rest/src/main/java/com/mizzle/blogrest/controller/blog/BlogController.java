@@ -117,7 +117,6 @@ public class BlogController {
         );
     }
 
-
     @Operation(summary = "댓글(들) 불러오기", description = "댓글(들)을 불러옵니다.")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "댓글(들) 불러오기 성공", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = Reply.class) ) } ),

@@ -9,12 +9,12 @@ import lombok.Data;
 @Data
 public class SignInRequest {
 
-    @Schema( type = "string", example = "string@aa.bb")
+    @Schema( type = "string", example = "string@aa.bb", description="계정 이메일 입니다.")
     @NotBlank
     @Email
     private String email;
 
-    @Schema( type = "string", example = "string")
+    @Schema( type = "string", example = "string", description="계정 비밀번호 입니다.")
     @NotBlank
     private String password;
 }

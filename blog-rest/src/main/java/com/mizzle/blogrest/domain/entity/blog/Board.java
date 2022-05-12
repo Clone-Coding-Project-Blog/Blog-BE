@@ -35,11 +35,9 @@ public class Board extends DefaultTime{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    //@Id
     @Column(name="title", nullable=false)
     private String title;
 
-    //@Id
     @Column(name="username", nullable=false)
     private String username;
 

@@ -7,7 +7,6 @@ import javax.validation.constraints.Size;
 
 import com.mizzle.blogrest.domain.entity.blog.Purpose;
 
-import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
@@ -41,7 +40,6 @@ public class CreateBoardRequest {
     @NotBlank(message = "작성 상태는 필수 입력 값입니다.")
     private Purpose purpose;
 
-    
     public CreateBoardRequest(){}
 
     @Builder
