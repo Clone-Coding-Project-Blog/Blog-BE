@@ -58,9 +58,10 @@ public class User extends DefaultTime{
     private Role role;
 
     private String providerId;
-
+    
     @OneToMany(cascade = CascadeType.REMOVE, fetch=FetchType.EAGER)
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private Collection<Reply> reply;
 
     public User(){}

@@ -28,15 +28,17 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
+@Tag(name = "Blog", description = "Blog API")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/blog")
@@ -60,7 +62,9 @@ public class BlogController {
         @ApiResponse(responseCode = "400", description = "개시글 정보 불러오기 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @GetMapping(value="/board/{boardId}")
-    public ResponseEntity<?> readBoard(@PathVariable long boardId){
+    public ResponseEntity<?> readBoard(
+        @Parameter(description = "개시글의 Id 입니다.", required = true) @PathVariable long boardId
+    ){
         return boardService.readBoard(
             ReadBoardRequest.builder().boardId(boardId).build()
         );
@@ -72,7 +76,10 @@ public class BlogController {
         @ApiResponse(responseCode = "400", description = "개시글 작성 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PostMapping(value="/board")
-    public ResponseEntity<?> createBoard(@CurrentUser UserPrincipal userPrincipal, CreateBoardRequest createBoardRequest){
+    public ResponseEntity<?> createBoard(
+        @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal, 
+        @Parameter(description = "Schemas의 CreateBoardRequest를 참고해주세요.", required = true) CreateBoardRequest createBoardRequest
+    ){
         return boardService.createBoard(userPrincipal, createBoardRequest);
     }
 
