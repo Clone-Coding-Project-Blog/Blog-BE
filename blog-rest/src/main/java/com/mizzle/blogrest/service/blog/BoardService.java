@@ -127,6 +127,7 @@ public class BoardService {
     }
 
     private long createBoard(User user, CreateBoardRequest createBoardRequest){
+        log.info("createBoardRequest={}",createBoardRequest);
         Board board = create(
             createBoardRequest.getTitle(),
             createBoardRequest.getSubtitle(),

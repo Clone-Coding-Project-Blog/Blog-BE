@@ -1,5 +1,7 @@
 package com.mizzle.blogrest.controller.blog;
 
+import javax.validation.Valid;
+
 import com.mizzle.blogrest.advice.payload.ErrorResponse;
 import com.mizzle.blogrest.config.security.token.CurrentUser;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
@@ -36,8 +38,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.bind.annotation.PutMapping;
 
+@Slf4j
 @Tag(name = "Blog", description = "Blog API")
 @RequiredArgsConstructor
 @RestController
@@ -78,8 +83,9 @@ public class BlogController {
     @PostMapping(value="/board")
     public ResponseEntity<?> createBoard(
         @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal, 
-        @Parameter(description = "Schemas의 CreateBoardRequest를 참고해주세요.", required = true) CreateBoardRequest createBoardRequest
+        @Parameter(description = "Schemas의 CreateBoardRequest를 참고해주세요.", required = true) @Valid CreateBoardRequest createBoardRequest
     ){
+        log.info("CreateBoardRequest={}", createBoardRequest);
         return boardService.createBoard(userPrincipal, createBoardRequest);
     }
 
