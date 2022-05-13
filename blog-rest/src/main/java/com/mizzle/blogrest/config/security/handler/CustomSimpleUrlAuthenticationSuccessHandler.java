@@ -2,12 +2,12 @@ package com.mizzle.blogrest.config.security.handler;
 
 import com.mizzle.blogrest.advice.assertThat.DefaultAssert;
 import com.mizzle.blogrest.config.security.OAuth2Config;
-import com.mizzle.blogrest.config.security.repository.CustomAuthorizationRequestRepository;
-import com.mizzle.blogrest.config.security.repository.TokenRepository;
-import com.mizzle.blogrest.config.security.service.CustomTokenProviderService;
 import com.mizzle.blogrest.config.security.util.CustomCookie;
 import com.mizzle.blogrest.domain.entity.user.Token;
 import com.mizzle.blogrest.domain.mapping.TokenMapping;
+import com.mizzle.blogrest.repository.auth.CustomAuthorizationRequestRepository;
+import com.mizzle.blogrest.repository.auth.TokenRepository;
+import com.mizzle.blogrest.service.auth.CustomTokenProviderService;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -17,7 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import static com.mizzle.blogrest.config.security.repository.CustomAuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
+import static com.mizzle.blogrest.repository.auth.CustomAuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
 import java.io.IOException;
 import java.net.URI;

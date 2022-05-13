@@ -5,7 +5,6 @@ import com.mizzle.blogrest.config.security.token.CurrentUser;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
 import com.mizzle.blogrest.domain.entity.blog.Reply;
 import com.mizzle.blogrest.domain.mapping.BoardMapping;
-import com.mizzle.blogrest.payload.Message;
 import com.mizzle.blogrest.payload.request.blog.CreateBoardRequest;
 import com.mizzle.blogrest.payload.request.blog.CreateLikeRequest;
 import com.mizzle.blogrest.payload.request.blog.CreateReplyRequest;
@@ -16,6 +15,7 @@ import com.mizzle.blogrest.payload.request.blog.ReadBoardsRequest;
 import com.mizzle.blogrest.payload.request.blog.ReadReplysRequest;
 import com.mizzle.blogrest.payload.request.blog.UpdateBoardRequest;
 import com.mizzle.blogrest.payload.request.blog.UpdateReplyRequest;
+import com.mizzle.blogrest.payload.response.Message;
 import com.mizzle.blogrest.payload.response.blog.ReadLikeResponse;
 import com.mizzle.blogrest.service.blog.BoardService;
 

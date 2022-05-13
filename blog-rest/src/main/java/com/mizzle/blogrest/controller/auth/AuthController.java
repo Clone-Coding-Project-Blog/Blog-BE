@@ -1,18 +1,18 @@
-package com.mizzle.blogrest.config.security.controller;
+package com.mizzle.blogrest.controller.auth;
 
 
 import javax.validation.Valid;
 
 import com.mizzle.blogrest.advice.payload.ErrorResponse;
-import com.mizzle.blogrest.config.security.service.AuthService;
 import com.mizzle.blogrest.config.security.token.CurrentUser;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
 import com.mizzle.blogrest.domain.entity.user.User;
-import com.mizzle.blogrest.payload.Message;
 import com.mizzle.blogrest.payload.request.auth.ChangePasswordRequest;
 import com.mizzle.blogrest.payload.request.auth.SignInRequest;
 import com.mizzle.blogrest.payload.request.auth.SignUpRequest;
 import com.mizzle.blogrest.payload.response.AuthResponse;
+import com.mizzle.blogrest.payload.response.Message;
+import com.mizzle.blogrest.service.auth.AuthService;
 import com.mizzle.blogrest.payload.request.auth.RefreshTokenRequest;
 
 import org.springframework.http.ResponseEntity;

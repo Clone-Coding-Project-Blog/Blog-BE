@@ -2,11 +2,11 @@ package com.mizzle.blogrest.config.security;
 
 import com.mizzle.blogrest.config.security.handler.CustomSimpleUrlAuthenticationFailureHandler;
 import com.mizzle.blogrest.config.security.handler.CustomSimpleUrlAuthenticationSuccessHandler;
-import com.mizzle.blogrest.config.security.repository.CustomAuthorizationRequestRepository;
-import com.mizzle.blogrest.config.security.service.CustomDefaultOAuth2UserService;
-import com.mizzle.blogrest.config.security.service.CustomUserDetailsService;
 import com.mizzle.blogrest.config.security.token.CustomAuthenticationEntryPoint;
 import com.mizzle.blogrest.config.security.token.CustomOncePerRequestFilter;
+import com.mizzle.blogrest.repository.auth.CustomAuthorizationRequestRepository;
+import com.mizzle.blogrest.service.auth.CustomDefaultOAuth2UserService;
+import com.mizzle.blogrest.service.auth.CustomUserDetailsService;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,11 +1,10 @@
-package com.mizzle.blogrest.config.security.service;
+package com.mizzle.blogrest.service.auth;
 
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
 import com.mizzle.blogrest.advice.assertThat.DefaultAssert;
-import com.mizzle.blogrest.config.security.repository.TokenRepository;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
 import com.mizzle.blogrest.domain.entity.blog.Board;
 import com.mizzle.blogrest.domain.entity.user.Provider;
@@ -13,13 +12,14 @@ import com.mizzle.blogrest.domain.entity.user.Role;
 import com.mizzle.blogrest.domain.entity.user.Token;
 import com.mizzle.blogrest.domain.entity.user.User;
 import com.mizzle.blogrest.domain.mapping.TokenMapping;
-import com.mizzle.blogrest.payload.Message;
 import com.mizzle.blogrest.payload.request.auth.ChangePasswordRequest;
 import com.mizzle.blogrest.payload.request.auth.SignInRequest;
 import com.mizzle.blogrest.payload.request.auth.SignUpRequest;
 import com.mizzle.blogrest.payload.request.auth.RefreshTokenRequest;
 import com.mizzle.blogrest.payload.response.ApiResponse;
 import com.mizzle.blogrest.payload.response.AuthResponse;
+import com.mizzle.blogrest.payload.response.Message;
+import com.mizzle.blogrest.repository.auth.TokenRepository;
 import com.mizzle.blogrest.repository.blog.BoardRepository;
 import com.mizzle.blogrest.repository.blog.LikeRepository;
 import com.mizzle.blogrest.repository.blog.ReplyRepository;

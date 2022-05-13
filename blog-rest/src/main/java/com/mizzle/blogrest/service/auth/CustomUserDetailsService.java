@@ -1,4 +1,4 @@
-package com.mizzle.blogrest.config.security.service;
+package com.mizzle.blogrest.service.auth;
 
 import java.util.Optional;
 

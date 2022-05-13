@@ -7,7 +7,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import lombok.RequiredArgsConstructor;
 
-import static com.mizzle.blogrest.config.security.repository.CustomAuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
+import static com.mizzle.blogrest.repository.auth.CustomAuthorizationRequestRepository.REDIRECT_URI_PARAM_COOKIE_NAME;
 
 import java.io.IOException;
 
@@ -16,8 +16,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.mizzle.blogrest.config.security.repository.CustomAuthorizationRequestRepository;
 import com.mizzle.blogrest.config.security.util.CustomCookie;
+import com.mizzle.blogrest.repository.auth.CustomAuthorizationRequestRepository;
 
 @RequiredArgsConstructor
 @Component
