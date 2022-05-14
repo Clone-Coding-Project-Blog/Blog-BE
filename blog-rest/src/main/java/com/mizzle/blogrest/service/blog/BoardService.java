@@ -19,14 +19,11 @@ import com.mizzle.blogrest.domain.entity.user.User;
 import com.mizzle.blogrest.domain.mapping.BoardMapping;
 import com.mizzle.blogrest.payload.request.blog.ReadBoardRequest;
 import com.mizzle.blogrest.payload.request.blog.ReadBoardsRequest;
-import com.mizzle.blogrest.payload.request.blog.ReadReplysRequest;
 import com.mizzle.blogrest.payload.request.blog.UpdateBoardRequest;
 import com.mizzle.blogrest.payload.request.blog.UpdateReplyRequest;
 import com.mizzle.blogrest.payload.request.blog.CreateBoardRequest;
-import com.mizzle.blogrest.payload.request.blog.CreateLikeRequest;
 import com.mizzle.blogrest.payload.request.blog.CreateReplyRequest;
 import com.mizzle.blogrest.payload.request.blog.DeleteBoardRequest;
-import com.mizzle.blogrest.payload.request.blog.DeleteLikeRequest;
 import com.mizzle.blogrest.payload.request.blog.DeleteReplyRequest;
 import com.mizzle.blogrest.payload.response.ApiResponse;
 import com.mizzle.blogrest.payload.response.Message;
@@ -90,6 +87,8 @@ public class BoardService {
     }
 
     public ResponseEntity<?> createBoard(@CurrentUser UserPrincipal userPrincipal, CreateBoardRequest createBoardRequest){
+        log.info("createBoardRequest={}",createBoardRequest);
+
         Optional<User> user = userRepository.findById(userPrincipal.getId());
         DefaultAssert.isTrue(user.isPresent(), "유저가 올바르지 않습니다.");
 
@@ -191,11 +190,11 @@ public class BoardService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    public ResponseEntity<?> createReply(@CurrentUser UserPrincipal userPrincipal, CreateReplyRequest createReplyRequest){
+    public ResponseEntity<?> createReply(@CurrentUser UserPrincipal userPrincipal, long boardId, CreateReplyRequest createReplyRequest){
         Optional<User> user = userRepository.findById(userPrincipal.getId());
         DefaultAssert.isTrue(user.isPresent(), "유저가 올바르지 않습니다.");
 
-        Optional<Board> board = boardRepository.findById(createReplyRequest.getBoardId());
+        Optional<Board> board = boardRepository.findById(boardId);
         DefaultAssert.isTrue(board.isPresent(), "개시글 정보가 올바르지 않습니다.");
 
         Reply reply = create(
@@ -212,9 +211,9 @@ public class BoardService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    public ResponseEntity<?> readReplys(ReadReplysRequest readReplysRequest){
+    public ResponseEntity<?> readReplys(long boardId){
 
-        Optional<Board> board = boardRepository.findById(readReplysRequest.getBoardId());
+        Optional<Board> board = boardRepository.findById(boardId);
         DefaultAssert.isTrue(board.isPresent(), "개시글 정보가 올바르지 않습니다.");
 
         List<Reply> replys = replyRepository.findByBoardId(board.get().getId());
@@ -224,11 +223,11 @@ public class BoardService {
     }
 
     @Transactional
-    public ResponseEntity<?> updateReply(@CurrentUser UserPrincipal userPrincipal, UpdateReplyRequest updateReplyRequest){
+    public ResponseEntity<?> updateReply(@CurrentUser UserPrincipal userPrincipal, long boardId, long replyId, UpdateReplyRequest updateReplyRequest){
         Optional<User> user = userRepository.findById(userPrincipal.getId());
         DefaultAssert.isTrue(user.isPresent(), "유저가 올바르지 않습니다.");
 
-        Optional<Reply> reply = replyRepository.findById(updateReplyRequest.getReplyId());
+        Optional<Reply> reply = replyRepository.findById(replyId);
 
         reply.get().updateComment(updateReplyRequest.getComment());
         replyRepository.save(reply.get());
@@ -269,15 +268,15 @@ public class BoardService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    public ResponseEntity<?> createLike(@CurrentUser UserPrincipal userPrincipal, CreateLikeRequest createLikeRequest){
+    public ResponseEntity<?> createLike(@CurrentUser UserPrincipal userPrincipal, long boardId){
         boolean likeCheck = false;
 
         Optional<User> user = userRepository.findById(userPrincipal.getId());
-        Optional<Board> board = boardRepository.findById(createLikeRequest.getBoardId());
+        Optional<Board> board = boardRepository.findById(boardId);
         likeCheck = true;
 
         Optional<Like> like = likeRepository.findByBoardAndUser(board.get(), user.get());
-        if(like.isPresent()){
+        if(!like.isPresent()){
             likeRepository.save(
                 Like.builder().user(user.get()).board(board.get()).build()
             );
@@ -293,10 +292,10 @@ public class BoardService {
     }
 
     @Transactional
-    public ResponseEntity<?> deleteLike(@CurrentUser UserPrincipal userPrincipal, DeleteLikeRequest deleteLikeRequest){
+    public ResponseEntity<?> deleteLike(@CurrentUser UserPrincipal userPrincipal, long boardId){
         boolean likeCheck = false;
         Optional<User> user = userRepository.findById(userPrincipal.getId());
-        Optional<Board> board = boardRepository.findById(deleteLikeRequest.getBoardId());
+        Optional<Board> board = boardRepository.findById(boardId);
 
         Optional<Like> like = likeRepository.findByBoardAndUser(board.get(), user.get());
         likeRepository.delete(like.get());
