@@ -38,19 +38,16 @@ public class CreateBoardRequest {
     @NotNull
     private String html;
 
-    @Schema( type = "List<String>", example = "[\"tag1\",\"tag2\"]", description="개시글의 Tag(들) 입니다." )
-    @NotBlank(message = "Tag는 필수 입력 값입니다.")
-    @NotNull
+    @Schema( type = "List", example = "[\"tag1\",\"tag2\"]", description="개시글의 Tag(들) 입니다." )
+    @NotNull(message = "Tag는 필수 입력 값입니다.")
     private List<String> tagNames;
 
-    @Schema( type = "Enums", example = "finish" , description="작성 상태(write,finish) 입니다." )
-    @NotBlank(message = "작성 상태는 필수 입력 값입니다.")
-    @NotNull
-    
+    @Schema( type = "Enum", example = "finish" , description="작성 상태(write,finish) 입니다." )
+    @NotNull(message = "작성 상태는 필수 입력 값입니다.")
     private Purpose purpose;
-    /*
+    
     public CreateBoardRequest(){}
-    */
+    
     @Builder
     public CreateBoardRequest(String title, String subtitle, String markdown, String html, List<String> tagNames, Purpose purpose){
         this.title = title;
