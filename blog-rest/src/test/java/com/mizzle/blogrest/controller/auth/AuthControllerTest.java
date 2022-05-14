@@ -1,13 +1,11 @@
 package com.mizzle.blogrest.controller.auth;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.mizzle.blogrest.lib.JsonUtils;
 import com.mizzle.blogrest.payload.request.auth.ChangePasswordRequest;
 import com.mizzle.blogrest.payload.request.auth.SignInRequest;
 import com.mizzle.blogrest.payload.request.auth.SignUpRequest;
 
 import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.junit.Assert;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -47,23 +45,6 @@ public class AuthControllerTest {
                                     .build();
     }
 
-    //dto를 object mapper로 통해 json 으로 저장
-    private String asJsonToString(Object object) {
-        try {
-            return new ObjectMapper().writeValueAsString(object);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    //string 값을 json 형식으로 변경
-    private JSONObject asStringToJson(String string) throws ParseException{
-        JSONParser jsonParser = new JSONParser();
-        Object object = jsonParser.parse( string );
-        JSONObject jsonObject = (JSONObject) object;
-        return jsonObject;
-    }
-
     private void signup(String email) throws Exception{
         SignUpRequest signUpRequest = new SignUpRequest();
         signUpRequest.setEmail(email);
@@ -73,7 +54,7 @@ public class AuthControllerTest {
         ResultActions actions = this.mockMvc.perform(
                     post("/auth/signup")
                     .content(
-                        asJsonToString(signUpRequest)
+                        JsonUtils.asJsonToString(signUpRequest)
                     )
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
@@ -81,7 +62,7 @@ public class AuthControllerTest {
                 .andExpect(status().is2xxSuccessful())
                 .andDo(print());
 
-        JSONObject jsonObject = asStringToJson(actions.andReturn().getResponse().getContentAsString());
+        JSONObject jsonObject = JsonUtils.asStringToJson(actions.andReturn().getResponse().getContentAsString());
         log.info("jsonObject={}",jsonObject);
 
         Assert.assertEquals(jsonObject.get("check"), true);
@@ -97,7 +78,7 @@ public class AuthControllerTest {
         ResultActions actions = this.mockMvc.perform(
                     post("/auth/signin")
                     .content(
-                        asJsonToString(signInRequest)
+                        JsonUtils.asJsonToString(signInRequest)
                     )
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
@@ -105,7 +86,7 @@ public class AuthControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print());
 
-        JSONObject jsonObject = asStringToJson(actions.andReturn().getResponse().getContentAsString());
+        JSONObject jsonObject = JsonUtils.asStringToJson(actions.andReturn().getResponse().getContentAsString());
         return jsonObject;
     }
 
@@ -114,16 +95,14 @@ public class AuthControllerTest {
         JSONObject token = signin(email);
         String accessToken = (String) token.get("accessToken");
 
-        ResultActions actions = this.mockMvc.perform(
-                    delete("/auth/")
-                    .header("Authorization", String.format("Bearer %s", accessToken))
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .accept(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isOk())
-                .andDo(print());
-
-        JSONObject jsonObject = asStringToJson(actions.andReturn().getResponse().getContentAsString());
+        this.mockMvc.perform(
+            delete("/auth/")
+            .header("Authorization", String.format("Bearer %s", accessToken))
+            .contentType(MediaType.APPLICATION_JSON)
+            .accept(MediaType.APPLICATION_JSON)
+        )
+        .andExpect(status().isOk())
+        .andDo(print());
     }
 
     @Test
@@ -145,7 +124,7 @@ public class AuthControllerTest {
         ResultActions actions = this.mockMvc.perform(
                     post("/auth/refresh")
                     .content(
-                        asJsonToString(changePasswordRequest)
+                        JsonUtils.asJsonToString(changePasswordRequest)
                     )
                     .header("Authorization", String.format("Bearer %s", accessToken))
                     .contentType(MediaType.APPLICATION_JSON)
@@ -155,7 +134,7 @@ public class AuthControllerTest {
                 .andDo(print());
 
          //then
-        JSONObject jsonObject = asStringToJson(actions.andReturn().getResponse().getContentAsString());
+        JSONObject jsonObject = JsonUtils.asStringToJson(actions.andReturn().getResponse().getContentAsString());
         log.info("jsonObject={}",jsonObject);
 
     }
@@ -172,7 +151,7 @@ public class AuthControllerTest {
         ResultActions actions = this.mockMvc.perform(
                     post("/auth/refresh")
                     .content(
-                        asJsonToString(refreshToken)
+                        JsonUtils.asJsonToString(refreshToken)
                     )
                     .header("Authorization", String.format("Bearer %s", accessToken))
                     .contentType(MediaType.APPLICATION_JSON)
@@ -182,7 +161,7 @@ public class AuthControllerTest {
                 .andDo(print());
 
         //then
-        JSONObject jsonObject = asStringToJson(actions.andReturn().getResponse().getContentAsString());
+        JSONObject jsonObject = JsonUtils.asStringToJson(actions.andReturn().getResponse().getContentAsString());
         log.info("jsonObject={}",jsonObject);
 
     }
@@ -209,7 +188,7 @@ public class AuthControllerTest {
                 .andDo(print());
 
         //then
-        JSONObject jsonObject = asStringToJson(actions.andReturn().getResponse().getContentAsString());
+        JSONObject jsonObject = JsonUtils.asStringToJson(actions.andReturn().getResponse().getContentAsString());
         log.info("jsonObject={}",jsonObject);
 
         Assert.assertEquals(jsonObject.get("check"), true);
@@ -226,7 +205,7 @@ public class AuthControllerTest {
         ResultActions actions = this.mockMvc.perform(
                     post("/auth/signin")
                     .content(
-                        asJsonToString(signInRequest)
+                        JsonUtils.asJsonToString(signInRequest)
                     )
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
@@ -235,7 +214,7 @@ public class AuthControllerTest {
                 .andDo(print());
 
         //then
-        JSONObject jsonObject = asStringToJson(actions.andReturn().getResponse().getContentAsString());
+        JSONObject jsonObject = JsonUtils.asStringToJson(actions.andReturn().getResponse().getContentAsString());
         log.info("jsonObject={}",jsonObject);
     }
 
@@ -251,7 +230,7 @@ public class AuthControllerTest {
         ResultActions actions = this.mockMvc.perform(
                     post("/auth/signout")
                     .content(
-                        asJsonToString(refreshToken)
+                        JsonUtils.asJsonToString(refreshToken)
                     )
                     .header("Authorization", String.format("Bearer %s", accessToken))
                     .contentType(MediaType.APPLICATION_JSON)
@@ -261,7 +240,7 @@ public class AuthControllerTest {
                 .andDo(print());
 
         //then
-        JSONObject jsonObject = asStringToJson(actions.andReturn().getResponse().getContentAsString());
+        JSONObject jsonObject = JsonUtils.asStringToJson(actions.andReturn().getResponse().getContentAsString());
         log.info("jsonObject={}",jsonObject);
 
         Assert.assertEquals(jsonObject.get("check"), true);
@@ -283,7 +262,7 @@ public class AuthControllerTest {
         ResultActions actions = this.mockMvc.perform(
                     post("/auth/signup")
                     .content(
-                        asJsonToString(signUpRequest)
+                        JsonUtils.asJsonToString(signUpRequest)
                     )
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
@@ -292,7 +271,7 @@ public class AuthControllerTest {
                 .andDo(print());
 
         //then
-        JSONObject jsonObject = asStringToJson(actions.andReturn().getResponse().getContentAsString());
+        JSONObject jsonObject = JsonUtils.asStringToJson(actions.andReturn().getResponse().getContentAsString());
         log.info("jsonObject={}",jsonObject);
 
         Assert.assertEquals(jsonObject.get("check"), true);
@@ -318,7 +297,7 @@ public class AuthControllerTest {
                 .andDo(print());
 
         //then
-        JSONObject jsonObject = asStringToJson(actions.andReturn().getResponse().getContentAsString());
+        JSONObject jsonObject = JsonUtils.asStringToJson(actions.andReturn().getResponse().getContentAsString());
         log.info("jsonObject={}",jsonObject);
 
         Assert.assertEquals(jsonObject.get("check"), true);
