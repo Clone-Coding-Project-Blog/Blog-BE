@@ -1,7 +1,5 @@
 package com.mizzle.blogrest.controller.blog;
 
-import javax.validation.Valid;
-
 import com.mizzle.blogrest.advice.payload.ErrorResponse;
 import com.mizzle.blogrest.config.security.token.CurrentUser;
 import com.mizzle.blogrest.config.security.token.UserPrincipal;
@@ -9,7 +7,6 @@ import com.mizzle.blogrest.domain.entity.blog.Reply;
 import com.mizzle.blogrest.domain.mapping.BoardMapping;
 import com.mizzle.blogrest.payload.request.blog.CreateBoardRequest;
 import com.mizzle.blogrest.payload.request.blog.CreateReplyRequest;
-import com.mizzle.blogrest.payload.request.blog.DeleteBoardRequest;
 import com.mizzle.blogrest.payload.request.blog.ReadBoardRequest;
 import com.mizzle.blogrest.payload.request.blog.ReadBoardsRequest;
 import com.mizzle.blogrest.payload.request.blog.UpdateBoardRequest;
@@ -25,7 +22,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,7 +53,9 @@ public class BlogController {
         @ApiResponse(responseCode = "400", description = "개시글 정보 불러오기 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @GetMapping(value="/board")
-    public ResponseEntity<?> readBoards(ReadBoardsRequest readBoardsRequest){
+    public ResponseEntity<?> readBoards(
+        ReadBoardsRequest readBoardsRequest
+    ){
         return boardService.readBoards(readBoardsRequest);
     }
 
@@ -85,7 +83,6 @@ public class BlogController {
         @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal, 
         @Parameter(description = "Schemas의 CreateBoardRequest를 참고해주세요.", required = true) @RequestBody @Validated CreateBoardRequest createBoardRequest
     ){
-        log.info("CreateBoardRequest={}", createBoardRequest);
         return boardService.createBoard(userPrincipal, createBoardRequest);
     }
 
@@ -95,10 +92,13 @@ public class BlogController {
         @ApiResponse(responseCode = "400", description = "개시글 삭제 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @DeleteMapping(value="/board/{boardId}")
-    public ResponseEntity<?> deleteBoard(@PathVariable long boardId, @CurrentUser UserPrincipal userPrincipal){
+    public ResponseEntity<?> deleteBoard(
+        @PathVariable long boardId, 
+        @CurrentUser UserPrincipal userPrincipal
+    ){
         return boardService.deleteBoard(
             userPrincipal, 
-            DeleteBoardRequest.builder().boardId(boardId).build()
+            boardId
         );
     }
 
@@ -108,18 +108,16 @@ public class BlogController {
         @ApiResponse(responseCode = "400", description = "개시글 수정 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PutMapping(value="/board/{boardId}")
-    public ResponseEntity<?> updateBoard(@PathVariable long boardId, @CurrentUser UserPrincipal userPrincipal, UpdateBoardRequest updateBoardRequest){
+    public ResponseEntity<?> updateBoard(
+        @PathVariable long boardId, 
+        @CurrentUser UserPrincipal userPrincipal, 
+        @RequestBody @Validated UpdateBoardRequest updateBoardRequest
+    ){
+        log.info("updateBoardRequest={}",updateBoardRequest);
         return boardService.updateBoard(
             userPrincipal, 
-            UpdateBoardRequest.builder()
-                .boardId(boardId)
-                .title(updateBoardRequest.getTitle())
-                .subtitle(updateBoardRequest.getSubtitle())
-                .markdown(updateBoardRequest.getMarkdown())
-                .html(updateBoardRequest.getHtml())
-                .tagNames(updateBoardRequest.getTagNames())
-                .purpose(updateBoardRequest.getPurpose())
-                .build()
+            boardId,
+            updateBoardRequest
         );
     }
 
@@ -144,7 +142,7 @@ public class BlogController {
     public ResponseEntity<?> createReply(
         @CurrentUser UserPrincipal userPrincipal, 
         @PathVariable long boardId, 
-        CreateReplyRequest createReplyRequest
+        @Validated @RequestBody CreateReplyRequest createReplyRequest
     ){
         return boardService.createReply(userPrincipal, boardId, createReplyRequest);
     }
@@ -155,7 +153,12 @@ public class BlogController {
         @ApiResponse(responseCode = "400", description = "댓글 수정 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PutMapping(value="/reply/{boardId}/{replyId}")
-    public ResponseEntity<?> updateReply(@PathVariable long boardId, @PathVariable long replyId, @CurrentUser UserPrincipal userPrincipal, UpdateReplyRequest updateReplyRequest) {
+    public ResponseEntity<?> updateReply(
+        @PathVariable long boardId, 
+        @PathVariable long replyId, 
+        @CurrentUser UserPrincipal userPrincipal, 
+        @Validated @RequestBody UpdateReplyRequest updateReplyRequest
+    ) {
         return boardService.updateReply(
             userPrincipal, 
             boardId,
@@ -170,7 +173,10 @@ public class BlogController {
         @ApiResponse(responseCode = "400", description = "관심버튼 클릭 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PostMapping(value="/like/{boardId}")
-    public ResponseEntity<?> createLike(@PathVariable long boardId, @CurrentUser UserPrincipal userPrincipal){
+    public ResponseEntity<?> createLike(
+        @PathVariable long boardId, 
+        @CurrentUser UserPrincipal userPrincipal
+    ){
         return boardService.createLike(
             userPrincipal, 
             boardId
@@ -183,7 +189,10 @@ public class BlogController {
         @ApiResponse(responseCode = "400", description = "관심버튼 클릭 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @DeleteMapping(value="/like/{boardId}")
-    public ResponseEntity<?> deleteLike(@PathVariable long boardId, @CurrentUser UserPrincipal userPrincipal){
+    public ResponseEntity<?> deleteLike(
+        @PathVariable long boardId, 
+        @CurrentUser UserPrincipal userPrincipal
+    ){
         return boardService.deleteLike(
             userPrincipal, 
             boardId
