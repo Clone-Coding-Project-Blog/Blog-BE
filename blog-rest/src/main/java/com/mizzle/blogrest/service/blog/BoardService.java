@@ -107,8 +107,10 @@ public class BoardService {
         return ResponseEntity.ok(apiResponse);
     }
 
-
+    @Transactional
     private long reloadBoard(User user, Board board, CreateBoardRequest createBoardRequest){
+        log.info("updateBoardRequest={}",createBoardRequest);
+
         board.updateAll(
             board.getId(), 
             createBoardRequest.getTitle(), 
@@ -125,6 +127,7 @@ public class BoardService {
         return board.getId();
     }
 
+    @Transactional
     private long createBoard(User user, CreateBoardRequest createBoardRequest){
         log.info("createBoardRequest={}",createBoardRequest);
         Board board = create(
@@ -142,6 +145,7 @@ public class BoardService {
         return board.getId();
     }
 
+    @Transactional
     private void tagSave(Board board, CreateBoardRequest writeBoardRequest) {
         tagRepository.deleteAllByBoardId(board.getId());
         Set<Tag> tags = create(writeBoardRequest.getTagNames(), board.getId());
@@ -168,11 +172,14 @@ public class BoardService {
         return ResponseEntity.ok(apiResponse);
     }
 
-    public ResponseEntity<?> updateBoard(@CurrentUser UserPrincipal userPrincipal, UpdateBoardRequest updateBoardRequest){
+    @Transactional
+    public ResponseEntity<?> updateBoard(@CurrentUser UserPrincipal userPrincipal,long boardId,  UpdateBoardRequest updateBoardRequest){
+        log.info("updateBoardRequest={}",updateBoardRequest);
+        
         Optional<User> user = userRepository.findById(userPrincipal.getId());
         DefaultAssert.isTrue(user.isPresent(), "유저가 올바르지 않습니다.");
 
-        Optional<Board> board = boardRepository.findByIdAndUsername(updateBoardRequest.getBoardId(), user.get().getEmail());
+        Optional<Board> board = boardRepository.findByIdAndUsername(boardId, user.get().getEmail());
         DefaultAssert.isTrue(board.isPresent(), "해당 개시글을 해당 유저가 수정할 수 없습니다.");
 
         long id = reloadBoard(
@@ -184,6 +191,7 @@ public class BoardService {
                             .markdown(updateBoardRequest.getMarkdown())
                             .html(updateBoardRequest.getHtml())
                             .purpose(updateBoardRequest.getPurpose())
+                            .tagNames(updateBoardRequest.getTagNames())
                             .build()
         );
         ApiResponse apiResponse = ApiResponse.builder().check(true).information(board.get()).build();
@@ -237,11 +245,11 @@ public class BoardService {
     }
 
     @Transactional
-    public ResponseEntity<?> deleteBoard(@CurrentUser UserPrincipal userPrincipal, DeleteBoardRequest deleteBoardRequest){
+    public ResponseEntity<?> deleteBoard(@CurrentUser UserPrincipal userPrincipal, long boardId){
         Optional<User> user = userRepository.findById(userPrincipal.getId());
         DefaultAssert.isTrue(user.isPresent(), "유저가 올바르지 않습니다.");
 
-        Optional<Board> board = boardRepository.findByIdAndUsername(deleteBoardRequest.getBoardId(), user.get().getEmail());
+        Optional<Board> board = boardRepository.findByIdAndUsername(boardId, user.get().getEmail());
         DefaultAssert.isTrue(board.isPresent(), "개시글 아이디가 올바르지 않습니다.");
 
         boardRepository.delete(board.get());
