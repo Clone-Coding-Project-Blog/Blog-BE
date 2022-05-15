@@ -54,7 +54,7 @@ public class BlogController {
     })
     @GetMapping(value="/board")
     public ResponseEntity<?> readBoards(
-        ReadBoardsRequest readBoardsRequest
+        @Parameter(description = "Schemas의 ReadBoardsRequest 참고해주세요.", required = true) ReadBoardsRequest readBoardsRequest
     ){
         return boardService.readBoards(readBoardsRequest);
     }
@@ -93,8 +93,8 @@ public class BlogController {
     })
     @DeleteMapping(value="/board/{boardId}")
     public ResponseEntity<?> deleteBoard(
-        @PathVariable long boardId, 
-        @CurrentUser UserPrincipal userPrincipal
+        @Parameter(description = "개시글 ID입니다.", required = true) @PathVariable long boardId, 
+        @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ){
         return boardService.deleteBoard(
             userPrincipal, 
@@ -109,11 +109,10 @@ public class BlogController {
     })
     @PutMapping(value="/board/{boardId}")
     public ResponseEntity<?> updateBoard(
-        @PathVariable long boardId, 
-        @CurrentUser UserPrincipal userPrincipal, 
-        @RequestBody @Validated UpdateBoardRequest updateBoardRequest
+        @Parameter(description = "개시글 ID입니다.", required = true) @PathVariable long boardId, 
+        @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal, 
+        @Parameter(description = "Schemas의 UpdateBoardRequest 참고해주세요.", required = true) @RequestBody @Validated UpdateBoardRequest updateBoardRequest
     ){
-        log.info("updateBoardRequest={}",updateBoardRequest);
         return boardService.updateBoard(
             userPrincipal, 
             boardId,
@@ -128,7 +127,7 @@ public class BlogController {
     })
     @GetMapping(value="/reply/{boardId}")
     public ResponseEntity<?> readReplys(
-        @PathVariable long boardId
+        @Parameter(description = "개시글 ID입니다.", required = true) @PathVariable long boardId
     ){
         return boardService.readReplys(boardId);
     }
@@ -140,9 +139,9 @@ public class BlogController {
     })
     @PostMapping(value="/reply/{boardId}")
     public ResponseEntity<?> createReply(
-        @CurrentUser UserPrincipal userPrincipal, 
-        @PathVariable long boardId, 
-        @Validated @RequestBody CreateReplyRequest createReplyRequest
+        @Parameter(description = "개시글 ID입니다.", required = true) @PathVariable long boardId, 
+        @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal, 
+        @Parameter(description = "Schemas의 CreateReplyRequest 참고해주세요.", required = true) @Validated @RequestBody CreateReplyRequest createReplyRequest
     ){
         return boardService.createReply(userPrincipal, boardId, createReplyRequest);
     }
@@ -154,10 +153,10 @@ public class BlogController {
     })
     @PutMapping(value="/reply/{boardId}/{replyId}")
     public ResponseEntity<?> updateReply(
-        @PathVariable long boardId, 
-        @PathVariable long replyId, 
-        @CurrentUser UserPrincipal userPrincipal, 
-        @Validated @RequestBody UpdateReplyRequest updateReplyRequest
+        @Parameter(description = "개시글 ID입니다.", required = true) @PathVariable long boardId, 
+        @Parameter(description = "댓글 ID입니다.", required = true) @PathVariable long replyId, 
+        @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal, 
+        @Parameter(description = "Schemas의 CreateReplyRequest 참고해주세요.", required = true) @Validated @RequestBody UpdateReplyRequest updateReplyRequest
     ) {
         return boardService.updateReply(
             userPrincipal, 
@@ -174,8 +173,8 @@ public class BlogController {
     })
     @PostMapping(value="/like/{boardId}")
     public ResponseEntity<?> createLike(
-        @PathVariable long boardId, 
-        @CurrentUser UserPrincipal userPrincipal
+        @Parameter(description = "개시글 ID입니다.", required = true) @PathVariable long boardId, 
+        @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ){
         return boardService.createLike(
             userPrincipal, 
@@ -190,8 +189,8 @@ public class BlogController {
     })
     @DeleteMapping(value="/like/{boardId}")
     public ResponseEntity<?> deleteLike(
-        @PathVariable long boardId, 
-        @CurrentUser UserPrincipal userPrincipal
+        @Parameter(description = "개시글 ID입니다.", required = true) @PathVariable long boardId, 
+        @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
     ){
         return boardService.deleteLike(
             userPrincipal, 

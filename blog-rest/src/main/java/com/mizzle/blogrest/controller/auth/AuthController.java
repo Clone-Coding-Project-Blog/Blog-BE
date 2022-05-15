@@ -25,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -47,7 +48,9 @@ public class AuthController {
         @ApiResponse(responseCode = "400", description = "유저 확인 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @GetMapping(value = "/")
-    public ResponseEntity<?> whoAmI(@CurrentUser UserPrincipal userPrincipal) {
+    public ResponseEntity<?> whoAmI(
+        @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
+    ) {
         return authService.whoAmI(userPrincipal);
     }
 
@@ -57,7 +60,9 @@ public class AuthController {
         @ApiResponse(responseCode = "400", description = "유저 삭제 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @DeleteMapping(value = "/")
-    public ResponseEntity<?> delete(@CurrentUser UserPrincipal userPrincipal){
+    public ResponseEntity<?> delete(
+        @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal
+    ){
         return authService.delete(userPrincipal);
     }
 
@@ -67,7 +72,10 @@ public class AuthController {
         @ApiResponse(responseCode = "400", description = "유저 정보 갱신 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PutMapping(value = "/")
-    public ResponseEntity<?> modify(@CurrentUser UserPrincipal userPrincipal, @Valid @RequestBody ChangePasswordRequest passwordChangeRequest){
+    public ResponseEntity<?> modify(
+        @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal, 
+        @Parameter(description = "Schemas의 ChangePasswordRequest를 참고해주세요.", required = true) @Valid @RequestBody ChangePasswordRequest passwordChangeRequest
+    ){
         return authService.modify(userPrincipal, passwordChangeRequest);
     }
 
@@ -77,7 +85,9 @@ public class AuthController {
         @ApiResponse(responseCode = "400", description = "유저 로그인 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PostMapping(value = "/signin")
-    public ResponseEntity<?> signin(@Valid @RequestBody SignInRequest signInRequest) {
+    public ResponseEntity<?> signin(
+        @Parameter(description = "Schemas의 SignInRequest를 참고해주세요.", required = true) @Valid @RequestBody SignInRequest signInRequest
+    ) {
         return authService.signin(signInRequest);
     }
 
@@ -87,7 +97,9 @@ public class AuthController {
         @ApiResponse(responseCode = "400", description = "회원가입 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PostMapping(value = "/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody SignUpRequest signUpRequest) {
+    public ResponseEntity<?> signup(
+        @Parameter(description = "Schemas의 SignUpRequest를 참고해주세요.", required = true) @Valid @RequestBody SignUpRequest signUpRequest
+    ) {
         return authService.signup(signUpRequest);
     }
 
@@ -97,7 +109,9 @@ public class AuthController {
         @ApiResponse(responseCode = "400", description = "토큰 갱신 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PostMapping(value = "/refresh")
-    public ResponseEntity<?> refresh(@Valid @RequestBody RefreshTokenRequest tokenRefreshRequest) {
+    public ResponseEntity<?> refresh(
+        @Parameter(description = "Schemas의 RefreshTokenRequest를 참고해주세요.", required = true) @Valid @RequestBody RefreshTokenRequest tokenRefreshRequest
+    ) {
         return authService.refresh(tokenRefreshRequest);
     }
 
@@ -108,7 +122,10 @@ public class AuthController {
         @ApiResponse(responseCode = "400", description = "로그아웃 실패", content = { @Content(mediaType = "application/json", schema = @Schema(implementation = ErrorResponse.class) ) } ),
     })
     @PostMapping(value="/signout")
-    public ResponseEntity<?> signout(@Valid @RequestBody RefreshTokenRequest tokenRefreshRequest) {
+    public ResponseEntity<?> signout(
+        @Parameter(description = "Accesstoken을 입력해주세요.", required = true) @CurrentUser UserPrincipal userPrincipal, 
+        @Parameter(description = "Schemas의 RefreshTokenRequest를 참고해주세요.", required = true) @Valid @RequestBody RefreshTokenRequest tokenRefreshRequest
+    ) {
         return authService.signout(tokenRefreshRequest);
     }
 
