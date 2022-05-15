@@ -5,7 +5,8 @@ import com.mizzle.blogrest.lib.JsonUtils;
 import com.mizzle.blogrest.payload.request.auth.SignInRequest;
 import com.mizzle.blogrest.payload.request.blog.CreateBoardRequest;
 import com.mizzle.blogrest.payload.request.blog.CreateReplyRequest;
-import com.mizzle.blogrest.service.blog.BoardService;
+import com.mizzle.blogrest.payload.request.blog.UpdateBoardRequest;
+import com.mizzle.blogrest.payload.request.blog.UpdateReplyRequest;
 
 import org.json.simple.JSONObject;
 import org.junit.jupiter.api.Test;
@@ -35,9 +36,6 @@ public class BlogControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
-    
-    @Autowired
-    private BoardService boardService;
 
     private JSONObject signin(String email) throws Exception{
         
@@ -173,7 +171,7 @@ public class BlogControllerTest {
 
         CreateReplyRequest createReplyRequest = new CreateReplyRequest();
         createReplyRequest.setComment("testCreateLike");
-
+        
         //when
         ResultActions actions = this.mockMvc.perform(
                     post(String.format("/blog/reply/%d", boardId))
@@ -289,7 +287,7 @@ public class BlogControllerTest {
         //when
                 
         ResultActions actions = this.mockMvc.perform(
-                    get(String.format("/blog/board/%d", boardId))
+                    get(String.format("/blog/reply/%d", boardId))
                     .contentType(MediaType.APPLICATION_JSON)
                     .accept(MediaType.APPLICATION_JSON)
                 )
@@ -302,12 +300,74 @@ public class BlogControllerTest {
     }
 
     @Test
-    void testUpdateBoard() {
+    void testUpdateBoard() throws Exception {
+        //give
+        long boardId = 1;
 
+        JSONObject token = signin("string@aa.bb");
+        
+        String accessToken = (String) token.get("accessToken");
+
+        List<String> tagNames = new ArrayList<>();
+        tagNames.add("tag1");
+        tagNames.add("tag2");
+        tagNames.add("update tag3");
+
+        UpdateBoardRequest updateBoardRequest = UpdateBoardRequest.builder()
+                                                                .title("update sample")
+                                                                .subtitle("update sample")
+                                                                .purpose(Purpose.finish)
+                                                                .markdown("markdown")
+                                                                .html("<p>markdown</p>")
+                                                                .tagNames(tagNames)
+                                                                .build();
+
+        //when
+        ResultActions actions = this.mockMvc.perform(
+                    put(String.format("/blog/board/%d",boardId))
+                    .content(
+                        JsonUtils.asJsonToString(updateBoardRequest)
+                    )
+                    .header("Authorization", String.format("Bearer %s", accessToken))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        //then
+        JSONObject jsonObject = JsonUtils.asStringToJson(actions.andReturn().getResponse().getContentAsString());
+        log.info("jsonObject={}",jsonObject);
     }
 
     @Test
-    void testUpdateReply() {
+    void testUpdateReply() throws Exception {
+        //give
+        JSONObject token = signin("string@aa.bb");
+                
+        String accessToken = (String) token.get("accessToken");
 
+        long boardId = 1;
+        long replyId = 1;
+
+        UpdateReplyRequest updateReplyRequest = new UpdateReplyRequest();
+        updateReplyRequest.setComment("testUpdateLike");
+        
+        //when
+        ResultActions actions = this.mockMvc.perform(
+                    put(String.format("/blog/reply/%d/%d", boardId,replyId))
+                    .content(
+                        JsonUtils.asJsonToString(updateReplyRequest)
+                    )
+                    .header("Authorization", String.format("Bearer %s", accessToken))
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(print());
+
+        //then
+        JSONObject jsonObject = JsonUtils.asStringToJson(actions.andReturn().getResponse().getContentAsString());
+        log.info("jsonObject={}",jsonObject);
     }
 }
