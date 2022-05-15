@@ -23,7 +23,6 @@ import com.mizzle.blogrest.payload.request.blog.UpdateBoardRequest;
 import com.mizzle.blogrest.payload.request.blog.UpdateReplyRequest;
 import com.mizzle.blogrest.payload.request.blog.CreateBoardRequest;
 import com.mizzle.blogrest.payload.request.blog.CreateReplyRequest;
-import com.mizzle.blogrest.payload.request.blog.DeleteBoardRequest;
 import com.mizzle.blogrest.payload.request.blog.DeleteReplyRequest;
 import com.mizzle.blogrest.payload.response.ApiResponse;
 import com.mizzle.blogrest.payload.response.Message;
